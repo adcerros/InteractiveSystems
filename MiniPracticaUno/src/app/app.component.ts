@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ComponentFactoryResolver} from '@angular/core';
+import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 
 @Component({
   selector: 'app-root',
@@ -7,7 +8,6 @@ import { Component } from '@angular/core';
 })
 
 export class AppComponent {
- 
 }
 
 @Component({
@@ -30,7 +30,9 @@ export class mainDiv {
       <option>Solomillo al oporto</option>\
     </select>\
     <button (click)=upBill()>Add</button>\
-    <div id="bill"></div>\
+    <div></div>\
+    <h2>Se cargan</h2>\
+    <ng-template dishDinamicComponentHost></ng-template>\
     <div totalBill=totalBill>El total es: {{totalBill}}</div>',
   styleUrls: ['./app.component.scss']
 })
@@ -40,26 +42,37 @@ export class billMaker {
   pricesList = [11, 14, 9, 16, 17]
   totalBill = 0;
   addedDishesNumber = 0;
+  dishComponentsList = [] as any;
+  @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
+ 
+
   upCounter(newprice: any): void {
      this.totalBill = this.totalBill + newprice;
   }
   downCounter(newprice: any): void {
     this.totalBill = this.totalBill - newprice;
- }
+  }
+
   upBill(): void{
-    var dropdown = document.getElementById('selectionList') as HTMLSelectElement;
-    var bill =  document.getElementById('bill') as HTMLDivElement;
-    var newHtml = "<div id=dishNumber" + this.addedDishesNumber + ">Esto es una prueba</div><button (click)=deletedish(" + this.addedDishesNumber + ")>Delete</button>";
-    bill.insertAdjacentHTML('beforeend', newHtml);
-    this.upCounter(this.pricesList[dropdown.selectedIndex]) 
+    const newComponent = this.dynamicHost.viewContainerRef.createComponent(dishComponent);
+    // var dropdown = document.getElementById('selectionList') as HTMLSelectElement;
+    // this.upCounter(this.pricesList[dropdown.selectedIndex]) 
     this.addedDishesNumber++;
   }
-  deleteDish(index: any): void{
-    var elementToRemove = document.getElementById("dishNumber" + index) as HTMLDivElement;
+}
+
+@Component({
+  selector: 'dishComponent',
+  template: '<div dishName="dishName" price="price">{{dishName}}{{price}}</div><button (click)="deleteDish()">Delete</button>',
+  styleUrls: ['./app.component.scss']
+})
+
+export class dishComponent {  
+  dishName = "undefined";
+  price = 0;
+  dishNumber = 0;
+  
+  deleteDish(): void{
     alert("funciona");
-    this.addedDishesNumber--;
-
   }
-
-
 }
