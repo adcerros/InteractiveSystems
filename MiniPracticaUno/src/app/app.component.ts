@@ -1,4 +1,4 @@
-import { Component, ViewChild, ComponentFactoryResolver} from '@angular/core';
+import { Component, ViewChild, Inject} from '@angular/core';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 
 @Component({
@@ -55,8 +55,10 @@ export class billMaker {
 
   upBill(): void{
     const newComponent = this.dynamicHost.viewContainerRef.createComponent(dishComponent);
-    // var dropdown = document.getElementById('selectionList') as HTMLSelectElement;
-    // this.upCounter(this.pricesList[dropdown.selectedIndex]) 
+    var dropdown = document.getElementById('selectionList') as HTMLSelectElement;
+    this.upCounter(this.pricesList[dropdown.selectedIndex]) 
+    newComponent.instance.price = this.pricesList[dropdown.selectedIndex];
+    newComponent.instance.dishName = this.dishList[dropdown.selectedIndex];
     this.addedDishesNumber++;
   }
 }
@@ -64,14 +66,17 @@ export class billMaker {
 @Component({
   selector: 'dishComponent',
   template: '<div dishName="dishName" price="price">{{dishName}}{{price}}</div><button (click)="deleteDish()">Delete</button>',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  providers: [
+    {provide: 'price', useValue: 'container'},
+  ]
 })
+
 
 export class dishComponent {  
   dishName = "undefined";
   price = 0;
-  dishNumber = 0;
-  
+
   deleteDish(): void{
     alert("funciona");
   }
