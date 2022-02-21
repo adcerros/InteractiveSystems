@@ -1,4 +1,5 @@
-import { Component, ViewChild, Inject} from '@angular/core';
+import { Component, ViewChild, ElementRef, EventEmitter, Output, HostListener} from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 
 @Component({
@@ -12,11 +13,22 @@ export class AppComponent {
 
 @Component({
   selector: 'mainDiv',
-  template: '<div class="mainDiv"><billMaker></billMaker></div>',
+  template: '<div class="mainDiv">\
+              <billMaker (uppParentCounter)="upCounter($event)" (downParentCounter)="downCounter($event)"></billMaker>\
+              <div totalBill=totalBill>El total es: {{totalBill}}</div>\
+            </div>',
   styleUrls: ['./app.component.scss']
 })
 
 export class mainDiv {  
+  totalBill = 0;
+  downCounter(newPrice: any): void{
+    this.totalBill = this.totalBill - newPrice;
+  }
+
+  upCounter(newprice: any): void {
+     this.totalBill = this.totalBill + newprice;
+  }
 }
 
 @Component({
@@ -30,36 +42,30 @@ export class mainDiv {
       <option>Solomillo al oporto</option>\
     </select>\
     <button (click)=upBill()>Add</button>\
-    <div></div>\
-    <h2>Se cargan</h2>\
-    <ng-template dishDinamicComponentHost></ng-template>\
-    <div totalBill=totalBill>El total es: {{totalBill}}</div>',
+    <ng-template dishDinamicComponentHost></ng-template>',
   styleUrls: ['./app.component.scss']
 })
 
 export class billMaker {  
   dishList = ["Salmon a la plancha", "Carrillada al vino", "Chuleton de buey", "Tartar de atun", "Solomillo al oporto"];
   pricesList = [11, 14, 9, 16, 17]
-  totalBill = 0;
-  addedDishesNumber = 0;
-  dishComponentsList = [] as any;
   @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
- 
-
-  upCounter(newprice: any): void {
-     this.totalBill = this.totalBill + newprice;
-  }
-  downCounter(newprice: any): void {
-    this.totalBill = this.totalBill - newprice;
+  @Output() uppParentCounter = new EventEmitter<any>();
+  @Output() downParentCounter = new EventEmitter<any>();
+  constructor(){
+    this.uppParentCounter = new EventEmitter();
+    this.downParentCounter = new EventEmitter();
   }
 
   upBill(): void{
-    const newComponent = this.dynamicHost.viewContainerRef.createComponent(dishComponent);
     var dropdown = document.getElementById('selectionList') as HTMLSelectElement;
-    this.upCounter(this.pricesList[dropdown.selectedIndex]) 
+    this.uppParentCounter.emit(this.pricesList[dropdown.selectedIndex]);
+    const newComponent = this.dynamicHost.viewContainerRef.createComponent(dishComponent);
     newComponent.instance.price = this.pricesList[dropdown.selectedIndex];
     newComponent.instance.dishName = this.dishList[dropdown.selectedIndex];
-    this.addedDishesNumber++;
+    newComponent.instance.downParentCounters$Obs.subscribe(price =>{
+      this.downParentCounter.emit(price);
+    })
   }
 }
 
@@ -72,12 +78,18 @@ export class billMaker {
   ]
 })
 
-
 export class dishComponent {  
   dishName = "undefined";
   price = 0;
+  downParentCounter$: Subject<number>;
+  downParentCounters$Obs: Observable<Number>;
+  constructor(private hostComponent: ElementRef<HTMLElement>){
+    this.downParentCounter$ = new Subject();
+    this.downParentCounters$Obs = this.downParentCounter$.asObservable();
+  }
 
   deleteDish(): void{
-    alert("funciona");
+    this.hostComponent.nativeElement.remove();
+    this.downParentCounter$.next(this.price);
   }
 }
