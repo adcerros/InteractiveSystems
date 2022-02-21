@@ -52,20 +52,28 @@ export class billMaker {
 
   upBill(): void{
     var dropdown = document.getElementById('selectionList') as HTMLSelectElement;
+    // Se comprueba que se ha seleccionado un plato
     if (dropdown.selectedIndex > 0){
       let realSelectedIndex = dropdown.selectedIndex - 1;
+      // Se crea un nuevo componente con su informacion
       const newComponent = this.dynamicHost.viewContainerRef.createComponent(dishComponent);
       newComponent.instance.price = this.pricesList[realSelectedIndex];
       newComponent.instance.dishName = this.dishList[realSelectedIndex];
+      // Se crea una suscripcion a un observable para restar el precio de la cuenta si se elimina
       newComponent.instance.downParentCounters$Obs.subscribe(price =>{
         this.totalBill = this.totalBill - price;
       })
+      newComponent.instance.upParentCounters$Obs.subscribe(price =>{
+        this.totalBill = this.totalBill + price;
+      })
+      // Se añade el precio a la cuenta total
       this.upCounter(this.pricesList[realSelectedIndex])
     }
     else{
       alert("Selecciona el plato a añadir");
     }
   }
+
   downCounter(newPrice: any): void{
     this.totalBill = this.totalBill - newPrice;
   }
@@ -77,7 +85,12 @@ export class billMaker {
 
 @Component({
   selector: 'dishComponent',
-  template: '<div dishName="dishName" price="price">{{dishName}}  {{price}}</div><button (click)="deleteDish()">Delete</button>',
+  template: '<div dishName="dishName" price="price">{{dishName}} {{price}}</div>\
+            <div>\
+            <button (click)="deleteDish()">Delete</button>\
+            <p repetitions="repetitions">{{repetitions}}</p>\
+            <button (click)="addDishRepeated()">Add</button>\
+            </div>',
   styleUrls: ['./app.component.scss'],
   providers: [
     {provide: 'price', useValue: 'container'},
@@ -87,17 +100,38 @@ export class billMaker {
 export class dishComponent {  
   dishName : string;
   price : number;
+  repetitions : number;
   downParentCounter$: Subject<number>;
   downParentCounters$Obs: Observable<number>;
+  upParentCounter$: Subject<number>;
+  upParentCounters$Obs: Observable<number>;
   constructor(private hostComponent: ElementRef<HTMLElement>){
     this.dishName = "undefined";
     this.price = 0;
+    this.repetitions = 1;
+    // Se inicializa el sujeto y se transforma a observable
     this.downParentCounter$ = new Subject();
     this.downParentCounters$Obs = this.downParentCounter$.asObservable();
+    this.upParentCounter$ = new Subject();
+    this.upParentCounters$Obs = this.upParentCounter$.asObservable();
   }
 
+  // Al pulsar en el boton se elimina el componente
+  // Se envia el evento al componente padre para actualizar la cuenta antes de su eliminacion
   deleteDish(): void{
-    this.hostComponent.nativeElement.remove();
-    this.downParentCounter$.next(this.price);
+    if (this.repetitions < 2){
+      this.repetitions--;
+      this.downParentCounter$.next(this.price);
+      this.hostComponent.nativeElement.remove();
+    }
+    else{
+      this.repetitions--;
+      this.downParentCounter$.next(this.price);
+    }
+  }
+
+  addDishRepeated(): void{
+    this.upParentCounter$.next(this.price);
+    this.repetitions++;
   }
 }
