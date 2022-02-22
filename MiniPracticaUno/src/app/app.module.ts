@@ -1,7 +1,7 @@
 import { NgModule} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent, mainDiv, billMaker, dishComponent } from './app.component';
+import { AppComponent, mainDiv, billMaker, dishComponent, addEuro } from './app.component';
 import {MyComponentLoaderDirective} from '../app/myComponentCreator'
 
 @NgModule({
@@ -10,7 +10,8 @@ import {MyComponentLoaderDirective} from '../app/myComponentCreator'
     mainDiv,
     billMaker,
     dishComponent,
-    MyComponentLoaderDirective
+    MyComponentLoaderDirective, 
+    addEuro
   ],
   imports: [
     BrowserModule,

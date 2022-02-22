@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef} from '@angular/core';
+import { Component, ViewChild, ElementRef, Pipe, PipeTransform} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 
@@ -38,6 +38,7 @@ export class mainDiv {
     <div totalBill=totalBill>El total es: {{totalBill}}</div>',
   styleUrls: ['./app.component.scss']
 })
+
 
 export class billMaker {  
   dishList : Array<string>;
@@ -85,7 +86,7 @@ export class billMaker {
 
 @Component({
   selector: 'dishComponent',
-  template: '<div dishName="dishName" price="price">{{dishName}} {{price}}</div>\
+  template: '<div dishName="dishName" price="price">{{dishName}} {{price | addEuro }}</div>\
             <div>\
             <button (click)="deleteDish()">Delete</button>\
             <p repetitions="repetitions">{{repetitions}}</p>\
@@ -134,4 +135,13 @@ export class dishComponent {
     this.upParentCounter$.next(this.price);
     this.repetitions++;
   }
+}
+
+@Pipe({
+  name: 'addEuro'
+})
+export class addEuro implements PipeTransform{
+ transform(price : number) {
+   return price.toString() + " €"
+ }
 }
