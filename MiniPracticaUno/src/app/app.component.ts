@@ -2,6 +2,8 @@ import { Component, ViewChild, ElementRef, Pipe, PipeTransform} from '@angular/c
 import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 
+
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,68 +13,63 @@ import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 export class AppComponent {
 }
 
-@Component({
-  selector: 'mainDiv',
-  template: '<div class="mainDiv">\
-              <billMaker></billMaker>\
-            </div>',
-  styleUrls: ['./app.component.scss']
-})
 
-export class mainDiv {  
-}
 
 @Component({
   selector: 'billMaker',
   template: '\
-    <select id=selectionList>\
-      <option>Selecciona el plato a añadir</option>\
-      <option>Salmon a la plancha</option>\
-      <option>Carrillada al vino</option>\
-      <option>Chuleton de buey</option>\
-      <option>Tartar de atun</option>\
-      <option>Solomillo al oporto</option>\
-    </select>\
-    <button (click)=upBill()>Add</button>\
+    <p class="mainTitle">ORDEN</p>\
+    <div class="fullWidthDiv">\
+      <p class="secondaryTitle">Consumicion</p>\
+      <select [(ngModel)]="currentSelectionData">\
+        <option  *ngFor="let currentSelectionData of dishList; let i=index;">{{currentSelectionData}} {{pricesList[i] | pricesMainFormat}}</option>\
+      </select>\
+      <button class="standardText" (click)=upBill()>Add</button>\
+    </div>\
     <ng-template dishDinamicComponentHost></ng-template>\
-    <div totalBill=totalBill>El total es: {{totalBill}}</div>',
+    <div class="fullWidthDiv"><p class="secondaryTitle" totalBill=totalBill>El total es: {{totalBill}}</p></div>',
   styleUrls: ['./app.component.scss']
 })
 
-
-export class billMaker {  
+export class billMaker{  
   dishList : Array<string>;
   pricesList : Array<number>;
   totalBill : number;
+  currentSelectionData : string;
   @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
   constructor(){
     this.dishList = ["Salmon a la plancha", "Carrillada al vino", "Chuleton de buey", "Tartar de atun", "Solomillo al oporto"];
     this.pricesList = [11, 14, 9, 16, 17];
     this.totalBill = 0;
+    this.currentSelectionData = "Selecciona un plato a añadir";
   }
 
   upBill(): void{
-    var dropdown = document.getElementById('selectionList') as HTMLSelectElement;
+    let dataSplited = this.currentSelectionData.split(' (')
+    let index = this.dishList.indexOf(dataSplited[0])
     // Se comprueba que se ha seleccionado un plato
-    if (dropdown.selectedIndex > 0){
-      let realSelectedIndex = dropdown.selectedIndex - 1;
+    if (index > -1){
       // Se crea un nuevo componente con su informacion
-      const newComponent = this.dynamicHost.viewContainerRef.createComponent(dishComponent);
-      newComponent.instance.price = this.pricesList[realSelectedIndex];
-      newComponent.instance.dishName = this.dishList[realSelectedIndex];
-      // Se crea una suscripcion a un observable para restar el precio de la cuenta si se elimina
-      newComponent.instance.downParentCounters$Obs.subscribe(price =>{
-        this.totalBill = this.totalBill - price;
-      })
-      newComponent.instance.upParentCounters$Obs.subscribe(price =>{
-        this.totalBill = this.totalBill + price;
-      })
+      this.createNewDishComponent(index);
       // Se añade el precio a la cuenta total
-      this.upCounter(this.pricesList[realSelectedIndex])
+      this.upCounter(this.pricesList[index])
     }
     else{
       alert("Selecciona el plato a añadir");
     }
+  }
+
+  private createNewDishComponent(index: number) {
+    const newComponent = this.dynamicHost.viewContainerRef.createComponent(dishComponent);
+    newComponent.instance.price = this.pricesList[index];
+    newComponent.instance.currentSelectionData = this.dishList[index];
+    // Se crea una suscripcion a un observable para restar el precio de la cuenta si se elimina
+    newComponent.instance.downParentCounters$Obs.subscribe(price => {
+      this.totalBill = this.totalBill - price;
+    });
+    newComponent.instance.upParentCounters$Obs.subscribe(price => {
+      this.totalBill = this.totalBill + price;
+    });
   }
 
   downCounter(newPrice: any): void{
@@ -84,13 +81,15 @@ export class billMaker {
   }
 }
 
+
+
 @Component({
   selector: 'dishComponent',
-  template: '<div dishName="dishName" price="price">{{dishName}} {{price | addEuro }}</div>\
-            <div>\
-            <button (click)="deleteDish()">Delete</button>\
-            <p repetitions="repetitions">{{repetitions}}</p>\
-            <button (click)="addDishRepeated()">Add</button>\
+  template: '<div class="fullWidthDiv">\
+            <p class="standardText" currentSelectionData="currentSelectionData" price="price">{{currentSelectionData}} {{price | addEuro }}</p>\
+            <button class="standardText" (click)="deleteDish()">Delete</button>\
+            <p class="standardText" repetitions="repetitions">{{repetitions}}</p>\
+            <button class="standardText" (click)="addDishRepeated()">Add</button>\
             </div>',
   styleUrls: ['./app.component.scss'],
   providers: [
@@ -99,7 +98,7 @@ export class billMaker {
 })
 
 export class dishComponent {  
-  dishName : string;
+  currentSelectionData : string;
   price : number;
   repetitions : number;
   downParentCounter$: Subject<number>;
@@ -107,7 +106,7 @@ export class dishComponent {
   upParentCounter$: Subject<number>;
   upParentCounters$Obs: Observable<number>;
   constructor(private hostComponent: ElementRef<HTMLElement>){
-    this.dishName = "undefined";
+    this.currentSelectionData = "undefined";
     this.price = 0;
     this.repetitions = 1;
     // Se inicializa el sujeto y se transforma a observable
@@ -137,6 +136,9 @@ export class dishComponent {
   }
 }
 
+
+
+
 @Pipe({
   name: 'addEuro'
 })
@@ -145,3 +147,12 @@ export class addEuro implements PipeTransform{
    return price.toString() + " €"
  }
 }
+
+@Pipe({
+  name: 'pricesMainFormat'
+})
+export class pricesMainFormat implements PipeTransform{
+  transform(price : number) {
+    return "( " + price.toString() + " €" + " )"
+  }
+ }

@@ -1,4 +1,6 @@
-$mainColor: slategrey;
+$mainColor: white;
+$mainType: Helvetica;
+$mainTextColor: black;
 
 .mainDiv{
     width: 60vw;
@@ -7,21 +9,34 @@ $mainColor: slategrey;
     background-color: $mainColor;
     display: inline-block;
     margin-left: 20vw;
-
 }
 
 .mainTitle{
     font-size: calc(2vh + 2vw);
-    font-family: Helvetica;
-    color: black;
+    font-family: $mainType;
+    color: $mainTextColor;
     text-align: center;
 }
 
 .secondaryTitle{
     font-size: calc(1vh + 1vw);
-    font-family: Helvetica;
-    color: black;
-    text-align: center;
+    font-family: $mainType;
+    color: $mainTextColor;
     margin-top: 10vh;
+    width: fit-content;
+    display: inline-block;
+}
+
+.standardText{
+    font-size: calc(0.7vh + 0.7vw);
+    font-family: $mainType;
+    color: $mainTextColor;
+    display: inline-block;
+}
+
+.fullWidthDiv{
+    width: 100%;
+    display: inline-block;
+    text-align: center;
 }
 
