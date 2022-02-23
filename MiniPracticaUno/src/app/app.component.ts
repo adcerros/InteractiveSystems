@@ -20,14 +20,18 @@ export class AppComponent {
   template: '\
     <p class="mainTitle">ORDEN</p>\
     <div class="fullWidthDiv">\
-      <p class="secondaryTitle">Consumicion</p>\
+      <p class="secondaryTitle">Consumicion: </p>\
       <select [(ngModel)]="currentSelectionData">\
         <option  *ngFor="let currentSelectionData of dishList; let i=index;">{{currentSelectionData}} {{pricesList[i] | pricesMainFormat}}</option>\
       </select>\
-      <button class="standardText" (click)=upBill()>Add</button>\
+      <button class="addBtn" (click)=upBill()>&#10133;</button>\
+    </div>\
+    <div class="dataTitlesTableFormat">\
+      <p class="consumitionsTitle">Consumiciones</p>\
+      <p class="dishNameTitle">Producto</p><p class="dishPriceTitle">Precio</p><p class="dishNumberTitle">Numero</p>\
     </div>\
     <ng-template dishDinamicComponentHost></ng-template>\
-    <div class="fullWidthDiv"><p class="secondaryTitle" totalBill=totalBill>El total es: {{totalBill}}</p></div>',
+    <div class="fullWidthDiv"><p class="specialTitle" totalBill=totalBill>El total es: {{totalBill | addEuro}}</p></div>',
   styleUrls: ['./app.component.scss']
 })
 
@@ -85,11 +89,14 @@ export class billMaker{
 
 @Component({
   selector: 'dishComponent',
-  template: '<div class="fullWidthDiv">\
-            <p class="standardText" currentSelectionData="currentSelectionData" price="price">{{currentSelectionData}} {{price | addEuro }}</p>\
-            <button class="standardText" (click)="deleteDish()">Delete</button>\
-            <p class="standardText" repetitions="repetitions">{{repetitions}}</p>\
-            <button class="standardText" (click)="addDishRepeated()">Add</button>\
+  template: '<div class="blackCenteredDiv">\
+              <p class="dishName" currentSelectionData="currentSelectionData">{{currentSelectionData}}</p>\
+              <p class="dishPrice" price="price">{{price | addEuro }}</p>\
+              <div class=dishNumber>\
+                <button class="standardBtn" (click)="deleteDish()">&#10134;</button>\
+                <p class="standardText" repetitions="repetitions">{{repetitions}}</p>\
+                <button class="standardBtn" (click)="addDishRepeated()">&#10133;</button>\
+              </div>\
             </div>',
   styleUrls: ['./app.component.scss'],
   providers: [
