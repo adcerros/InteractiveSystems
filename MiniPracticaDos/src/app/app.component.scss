@@ -1,0 +1,186 @@
+//Colors
+$mainColor: white;
+$secondaryColor: black;
+$mainTextColor: black;
+$secondaryTextColor: white;
+//Fonts
+$mainType: Helvetica;
+//Text sizes
+$xlongSizeText: calc(1.5vh + 1.5vw);
+$longSizeText: calc(1vh + 1vw);
+$mediumSizeText: calc(0.8vh + 0.8vw);
+//Margin sizes
+$xGiantMarginAux: calc(16.5vw + 11.5vh);
+$xGiantMargin: calc(15vw + 10vh);
+$giantMargin: calc(11vw + 6vh);
+$giantMarginAux: calc(10vw + 5vh);
+$xxLongMargin: calc(5vw + 2.5vh);
+$xLongMargin: calc(3vw + 3vh);
+$longMargin: calc(1vw + 1vh);
+$mediumMargin: calc(1vw + 1vh);
+$littleMargin: calc(0.5vw + 0.5vh);
+//Others
+$centeredDivsWidth: 60vw;
+$dynamicDivsWidth: 80vw;
+$dynamicDivsHeight: calc(0.8vw + 0.8vh);
+$dynamicDivsLeftPadding: calc(2vw + 2vh);
+$dynamicDivsLeftPaddingAux: calc(2.5vw + 2.5vh);
+$dynamicDivsTopPadding: calc(0.2vw + 0.2vh);
+$centeredDivsLeftMargin: 10vw;
+$fullWidth: 100vw;
+$fullHeight: 100vh;
+$semiCircleBorderRadius: 40%;
+
+.mainDiv{
+    width: $fullWidth;
+    height: $fullHeight;
+    display: inline-block;
+}
+
+.mainTitle{
+    font-size: $xlongSizeText;
+    font-family: $mainType;
+    text-align: center;
+    font-weight: bold;
+}
+
+.secondaryTitle{
+    font-size: $longSizeText;
+    font-family: $mainType;
+    margin-top: $littleMargin;
+    display: inline-block;
+    margin-right: $longMargin;
+    font-weight: bold;
+}
+
+.specialTitle{
+    font-size: $longSizeText;
+    font-family: $mainType;
+    margin-top: $xxLongMargin;
+    display: inline-block;
+    margin-right: $longMargin;
+    font-weight: bold;
+}
+
+.consumitionsTitle{
+    width: $fullWidth;
+    text-align: left;
+    font-size: $xlongSizeText;
+    font-family: $mainType;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.standardText{
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    display: inline-block;
+}
+
+.fullWidthDiv{
+    width: $fullWidth;
+    display: inline-block;
+    text-align: center;
+    margin-top: $mediumMargin;
+    margin-bottom: $mediumMargin;
+}
+
+.centeredDiv{
+    width: $centeredDivsWidth;
+    margin-left: $centeredDivsLeftMargin;
+    display: inline-block;
+    text-align: center;
+    margin-top: $mediumMargin;
+    margin-bottom: $mediumMargin;
+}
+
+.blackCenteredDiv{
+    width: $dynamicDivsWidth;
+    height: $xLongMargin;
+    margin-left: $centeredDivsLeftMargin;
+    display: inline-block;
+    text-align: center;
+    background-color: $secondaryColor;
+    padding-left: $dynamicDivsLeftPadding;
+    padding-top: $dynamicDivsTopPadding;
+    border-radius: $mediumMargin;
+    margin-top: $mediumMargin;
+}
+
+.dataTitlesTableFormat{
+    width: $centeredDivsWidth;
+    margin-left: $centeredDivsLeftMargin;
+    display: inline-block;
+    text-align: center;
+    margin-top: $xLongMargin;
+    margin-bottom: $xLongMargin;
+    padding-left: $dynamicDivsLeftPaddingAux;
+}
+
+.standardBtn{
+    margin-left: $mediumMargin;
+    margin-right: $mediumMargin;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    border-radius: $semiCircleBorderRadius;
+    background-color: $mainColor;
+    color: $mainTextColor;
+    display: inline-block;
+    border: 1px solid $mainColor;
+}
+
+.addBtn{
+    margin-left: $littleMargin;
+    margin-right: $littleMargin;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    border-radius: $semiCircleBorderRadius;
+    display: inline-block;
+    border: 1px solid $secondaryColor;
+}
+
+.dishNameTitle{
+    position: absolute;
+    font-size: $longSizeText;
+    font-family: $mainType;
+    font-weight: bold;
+}
+
+.dishPriceTitle{
+    position: absolute;
+    margin-left: $giantMarginAux;
+    font-size: $longSizeText;
+    font-family: $mainType;
+    font-weight: bold;
+}
+
+.dishNumberTitle{
+    position: absolute;
+    margin-left: $xGiantMarginAux;
+    font-size: $longSizeText;
+    font-family: $mainType;
+    font-weight: bold;
+}
+
+.dishName{
+    position: absolute;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    color: $secondaryTextColor;
+}
+
+.dishPrice{
+    position: absolute;
+    margin-left: $giantMargin;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    color: $secondaryTextColor;
+}
+
+.dishNumber{
+    position: absolute;
+    margin-left: $xGiantMargin;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    color: $secondaryTextColor;
+}
