@@ -20,7 +20,7 @@ $longMargin: calc(1vw + 1vh);
 $mediumMargin: calc(1vw + 1vh);
 $littleMargin: calc(0.5vw + 0.5vh);
 //Others
-$centeredDivsWidth: 60vw;
+$centeredDivsWidth: 80vw;
 $dynamicDivsWidth: 80vw;
 $dynamicDivsHeight: calc(0.8vw + 0.8vh);
 $dynamicDivsLeftPadding: calc(2vw + 2vh);
@@ -109,12 +109,10 @@ $semiCircleBorderRadius: 40%;
 
 .dataTitlesTableFormat{
     width: $centeredDivsWidth;
-    margin-left: $centeredDivsLeftMargin;
     display: inline-block;
-    text-align: center;
     margin-top: $xLongMargin;
     margin-bottom: $xLongMargin;
-    padding-left: $dynamicDivsLeftPaddingAux;
+    margin-left: $centeredDivsLeftMargin;
 }
 
 .standardBtn{
@@ -139,30 +137,18 @@ $semiCircleBorderRadius: 40%;
     border: 1px solid $secondaryColor;
 }
 
-.dishNameTitle{
-    position: absolute;
+.carsTableTitles{
+    position: relative;
+    display: inline-block;
     font-size: $longSizeText;
     font-family: $mainType;
     font-weight: bold;
+    width: 10vw;
+    text-align: center;
 }
 
-.dishPriceTitle{
-    position: absolute;
-    margin-left: $giantMarginAux;
-    font-size: $longSizeText;
-    font-family: $mainType;
-    font-weight: bold;
-}
 
-.dishNumberTitle{
-    position: absolute;
-    margin-left: $xGiantMarginAux;
-    font-size: $longSizeText;
-    font-family: $mainType;
-    font-weight: bold;
-}
-
-.dishName{
+.carComponentText{
     position: absolute;
     font-size: $mediumSizeText;
     font-family: $mainType;

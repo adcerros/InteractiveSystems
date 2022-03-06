@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, Pipe, PipeTransform} from '@angular/core';
+import { Component, ViewChild, ElementRef, Pipe, PipeTransform, OnInit, AfterViewInit} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 
@@ -22,32 +22,43 @@ export class AppComponent {
     <div class="fullWidthDiv">\
       <p class="secondaryTitle">Filtrar por:</p>\
       <select [(ngModel)]="currentSelectionData">\
-        <option  *ngFor="let currentSelectionData of filtersList; let i=index;">{{currentSelectionData}} {{pricesList[i] | pricesMainFormat}}</option>\
+        <option  *ngFor="let currentSelectionData of filtersList; let i=index;">{{currentSelectionData}}</option>\
       </select>\
-      <button class="addBtn" (click)=upBill()>&#10133;</button>\
     </div>\
     <div class="dataTitlesTableFormat">\
-      <p class="dishNameTitle">Producto</p><p class="dishPriceTitle">Precio</p><p class="dishNumberTitle">Numero</p>\
+      <p class="carsTableTitles">Foto</p><p class="carsTableTitles">Marca</p><p class="carsTableTitles">Modelo</p>\
+      <p class="carsTableTitles">Año</p><p class="carsTableTitles">En venta desde</p><p class="carsTableTitles">Precio</p>\
+      <p class="carsTableTitles">PVP</p><p class="carsTableTitles">Acciones</p>\
     </div>\
-    <ng-template dishDinamicComponentHost></ng-template>',
+    <ng-template carDinamicComponentHost></ng-template>',
   styleUrls: ['./app.component.scss']
 })
 
-export class billMaker{  
+export class billMaker implements AfterViewInit {  
+  imagesList : Array<string>;
   filtersList : Array<string>;
+  brandsList : Array<string>;
+  modelsList : Array<string>;
+  yearsList : Array<number>;
   pricesList : Array<number>;
-  totalBill : number;
-  carsList : Array<string>;
   currentSelectionData : string;
   @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
   constructor(){
+    this.imagesList = ["assets/images/320.jpeg", "assets/images/claseA.jpeg", "assets/images/taycan.jpeg", "assets/images/multipla.jpeg", "assets/images/saxo.jpeg", "assets/images/mustang.jpeg"]
     this.filtersList = ["Modelo", "Marca", "Año"];
-    this.carsList = ["BMW", "Mercedes", "Porsche", "Fiat", "Citroen", "Ford"];
-    this.pricesList = [11, 14, 9, 16, 17];
-    this.totalBill = 0;
+    this.brandsList = ["BMW", "Mercedes", "Porsche", "Fiat", "Citroen", "Ford"];
+    this.modelsList = ["320", "Clase A" , "Taycan", "Multipla", "Saxo", "Mustang"];
+    this.yearsList = [2015, 2018, 2021, 2008, 2006, 2016]
+    this.pricesList = [11000, 14000, 64000, 2000, 1800, 13400];
     this.currentSelectionData = "Selecciona un plato a añadir";
   }
 
+  ngAfterViewInit(): void {
+    for (let i in this.imagesList){
+      this.createNewCarComponent(Number(i));
+    }
+  }
+  /*
   upBill(): void{
     let dataSplited = this.currentSelectionData.split(' (')
     let index = this.filtersList.indexOf(dataSplited[0])
@@ -62,26 +73,16 @@ export class billMaker{
       alert("Selecciona el plato a añadir");
     }
   }
+  */
 
-  private createNewcarComponent(index: number) {
+  private createNewCarComponent(index: number) {
     const newComponent = this.dynamicHost.viewContainerRef.createComponent(carComponent);
+    newComponent.instance.image = this.imagesList[index];
+    newComponent.instance.brand = this.brandsList[index];
+    newComponent.instance.model = this.modelsList[index];
+    newComponent.instance.year = this.yearsList[index];
     newComponent.instance.price = this.pricesList[index];
-    newComponent.instance.currentSelectionData = this.filtersList[index];
-    // Se crea una suscripcion a un observable para restar el precio de la cuenta si se elimina
-    newComponent.instance.downParentCounters$Obs.subscribe(price => {
-      this.totalBill = this.totalBill - price;
-    });
-    newComponent.instance.upParentCounters$Obs.subscribe(price => {
-      this.totalBill = this.totalBill + price;
-    });
-  }
-
-  downCounter(newPrice: any): void{
-    this.totalBill = this.totalBill - newPrice;
-  }
-
-  upCounter(newprice: any): void {
-     this.totalBill = this.totalBill + newprice;
+    newComponent.instance.pvp = this.pricesList[index] * 1.1; 
   }
 }
 
@@ -90,12 +91,17 @@ export class billMaker{
 @Component({
   selector: 'carComponent',
   template: '<div class="blackCenteredDiv">\
-              <p class="dishName" currentSelectionData="currentSelectionData">{{currentSelectionData}}</p>\
-              <p class="dishPrice" price="price">{{price | addEuro }}</p>\
-              <div class=dishNumber>\
-                <button class="standardBtn" (click)="deleteDish()">Rebajar</button>\
-                <p class="standardText" repetitions="repetitions">{{repetitions}}</p>\
-                <button class="standardBtn" (click)="addDishRepeated()">Vendido</button>\
+              <div><img [src]=image><img></div>\
+              <p class="carComponentText" brand="brand">{{brand}}</p>\
+              <p class="carComponentText" model="model">{{model}}</p>\
+              <p class="carComponentText" brand="brand">{{brand}}</p>\
+              <p class="carComponentText" year="year">{{year}}</p>\
+              <p class="carComponentText" onSaleSince="onSaleSince">{{onSaleSince}}</p>\
+              <p class="carComponentText" price="price">{{price | addEuro }}</p>\
+              <p class="carComponentText" pvp="pvp">{{pvp | addEuro }}</p>\
+              <div>\
+                <button class="standardBtn" (click)="deleteCar()">Rebajar</button>\
+                <button class="standardBtn" (click)="deleteCar()">Vendido</button>\
               </div>\
             </div>',
   styleUrls: ['./app.component.scss'],
@@ -105,41 +111,27 @@ export class billMaker{
 })
 
 export class carComponent {  
-  currentSelectionData : string;
+  image : string;
+  brand : string;
+  model : string;
+  year : number;
+  onSaleSince : Date;
   price : number;
-  repetitions : number;
-  downParentCounter$: Subject<number>;
-  downParentCounters$Obs: Observable<number>;
-  upParentCounter$: Subject<number>;
-  upParentCounters$Obs: Observable<number>;
+  pvp : number;
   constructor(private hostComponent: ElementRef<HTMLElement>){
-    this.currentSelectionData = "undefined";
-    this.price = 0;
-    this.repetitions = 1;
-    // Se inicializa el sujeto y se transforma a observable
-    this.downParentCounter$ = new Subject();
-    this.downParentCounters$Obs = this.downParentCounter$.asObservable();
-    this.upParentCounter$ = new Subject();
-    this.upParentCounters$Obs = this.upParentCounter$.asObservable();
+    this.image = "Imagen no disponible"
+    this.brand = "undefined"
+    this.model = "undefined"
+    this.year = 0;
+    this.onSaleSince = new Date()
+    this.price = 999999
+    this.pvp = (this.price * 1.1)
   }
 
   // Al pulsar en el boton se elimina el componente
   // Se envia el evento al componente padre para actualizar la cuenta antes de su eliminacion
-  deleteDish(): void{
-    if (this.repetitions < 2){
-      this.repetitions--;
-      this.downParentCounter$.next(this.price);
+  deleteCar(): void{
       this.hostComponent.nativeElement.remove();
-    }
-    else{
-      this.repetitions--;
-      this.downParentCounter$.next(this.price);
-    }
-  }
-
-  addDishRepeated(): void{
-    this.upParentCounter$.next(this.price);
-    this.repetitions++;
   }
 }
 
@@ -154,12 +146,3 @@ export class addEuro implements PipeTransform{
    return price.toString() + " €"
  }
 }
-
-@Pipe({
-  name: 'pricesMainFormat'
-})
-export class pricesMainFormat implements PipeTransform{
-  transform(price : number) {
-    return "( " + price.toString() + " €" + " )"
-  }
- }
