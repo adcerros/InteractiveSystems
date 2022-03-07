@@ -1,9 +1,11 @@
 import { NgModule} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent, billMaker, carComponent, addEuro} from './app.component';
+import { AppComponent, billMaker, carComponent, addEuro, dateOnFormat, getPvp} from './app.component';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common'
+
 
 @NgModule({
   declarations: [
@@ -11,14 +13,16 @@ import { FormsModule } from '@angular/forms';
     billMaker,
     carComponent,
     MyComponentLoaderDirective, 
-    addEuro
+    addEuro,
+    dateOnFormat,
+    getPvp
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule  
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

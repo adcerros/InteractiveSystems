@@ -10,26 +10,19 @@ $xlongSizeText: calc(1.5vh + 1.5vw);
 $longSizeText: calc(1vh + 1vw);
 $mediumSizeText: calc(0.8vh + 0.8vw);
 //Margin sizes
-$xGiantMarginAux: calc(16.5vw + 11.5vh);
-$xGiantMargin: calc(15vw + 10vh);
-$giantMargin: calc(11vw + 6vh);
-$giantMarginAux: calc(10vw + 5vh);
 $xxLongMargin: calc(5vw + 2.5vh);
-$xLongMargin: calc(3vw + 3vh);
 $longMargin: calc(1vw + 1vh);
 $mediumMargin: calc(1vw + 1vh);
 $littleMargin: calc(0.5vw + 0.5vh);
 //Others
+$blackCenteredDivsHeight: 10vh;
+$blackCenteredDivsWidth: 10vw;
 $centeredDivsWidth: 80vw;
-$dynamicDivsWidth: 80vw;
-$dynamicDivsHeight: calc(0.8vw + 0.8vh);
-$dynamicDivsLeftPadding: calc(2vw + 2vh);
-$dynamicDivsLeftPaddingAux: calc(2.5vw + 2.5vh);
-$dynamicDivsTopPadding: calc(0.2vw + 0.2vh);
-$centeredDivsLeftMargin: 10vw;
+$semiFullWidth: 80vw;
 $fullWidth: 100vw;
 $fullHeight: 100vh;
-$semiCircleBorderRadius: 40%;
+$semiCircleBorderRadius: 10vw;
+$centeredDivsLeftMargin: 10vw;
 
 .mainDiv{
     width: $fullWidth;
@@ -62,14 +55,6 @@ $semiCircleBorderRadius: 40%;
     font-weight: bold;
 }
 
-.consumitionsTitle{
-    width: $fullWidth;
-    text-align: left;
-    font-size: $xlongSizeText;
-    font-family: $mainType;
-    display: inline-block;
-    font-weight: bold;
-}
 
 .standardText{
     font-size: $mediumSizeText;
@@ -95,35 +80,33 @@ $semiCircleBorderRadius: 40%;
 }
 
 .blackCenteredDiv{
-    width: $dynamicDivsWidth;
-    height: $xLongMargin;
-    margin-left: $centeredDivsLeftMargin;
-    display: inline-block;
-    text-align: center;
+    width: $semiFullWidth;
+    height: $blackCenteredDivsHeight;
+    margin-left: $blackCenteredDivsWidth;
     background-color: $secondaryColor;
-    padding-left: $dynamicDivsLeftPadding;
-    padding-top: $dynamicDivsTopPadding;
     border-radius: $mediumMargin;
     margin-top: $mediumMargin;
 }
 
 .dataTitlesTableFormat{
-    width: $centeredDivsWidth;
-    display: inline-block;
-    margin-top: $xLongMargin;
-    margin-bottom: $xLongMargin;
-    margin-left: $centeredDivsLeftMargin;
+    width: $semiFullWidth;
+    height: $blackCenteredDivsHeight;
+    margin-left: $blackCenteredDivsWidth;
+    border-radius: $mediumMargin;
+    margin-top: $mediumMargin;
 }
 
 .standardBtn{
-    margin-left: $mediumMargin;
-    margin-right: $mediumMargin;
+    margin-top: 0.5vh;
+    margin-bottom: 0.5vh;
+    margin-left: 1vw;
+    height: 4vh;
+    width: 8vw;
     font-size: $mediumSizeText;
     font-family: $mainType;
     border-radius: $semiCircleBorderRadius;
     background-color: $mainColor;
     color: $mainTextColor;
-    display: inline-block;
     border: 1px solid $mainColor;
 }
 
@@ -143,30 +126,25 @@ $semiCircleBorderRadius: 40%;
     font-size: $longSizeText;
     font-family: $mainType;
     font-weight: bold;
-    width: 10vw;
+    width: $blackCenteredDivsWidth;
     text-align: center;
 }
 
 
 .carComponentText{
-    position: absolute;
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
     font-size: $mediumSizeText;
     font-family: $mainType;
     color: $secondaryTextColor;
 }
 
-.dishPrice{
-    position: absolute;
-    margin-left: $giantMargin;
+.carComponentImages{
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
     font-size: $mediumSizeText;
     font-family: $mainType;
     color: $secondaryTextColor;
-}
-
-.dishNumber{
-    position: absolute;
-    margin-left: $xGiantMargin;
-    font-size: $mediumSizeText;
-    font-family: $mainType;
-    color: $secondaryTextColor;
+    border-top-left-radius: $mediumMargin;
+    border-bottom-left-radius: $mediumMargin;
 }

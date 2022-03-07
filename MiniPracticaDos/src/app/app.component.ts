@@ -1,6 +1,7 @@
 import { Component, ViewChild, ElementRef, Pipe, PipeTransform, OnInit, AfterViewInit} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
+import { DatePipe } from '@angular/common';
 
 
 
@@ -25,7 +26,7 @@ export class AppComponent {
         <option  *ngFor="let currentSelectionData of filtersList; let i=index;">{{currentSelectionData}}</option>\
       </select>\
     </div>\
-    <div class="dataTitlesTableFormat">\
+    <div class="dataTitlesTableFormat d-flex justify-content-center">\
       <p class="carsTableTitles">Foto</p><p class="carsTableTitles">Marca</p><p class="carsTableTitles">Modelo</p>\
       <p class="carsTableTitles">Año</p><p class="carsTableTitles">En venta desde</p><p class="carsTableTitles">Precio</p>\
       <p class="carsTableTitles">PVP</p><p class="carsTableTitles">Acciones</p>\
@@ -82,7 +83,6 @@ export class billMaker implements AfterViewInit {
     newComponent.instance.model = this.modelsList[index];
     newComponent.instance.year = this.yearsList[index];
     newComponent.instance.price = this.pricesList[index];
-    newComponent.instance.pvp = this.pricesList[index] * 1.1; 
   }
 }
 
@@ -90,17 +90,16 @@ export class billMaker implements AfterViewInit {
 
 @Component({
   selector: 'carComponent',
-  template: '<div class="blackCenteredDiv">\
-              <div><img [src]=image><img></div>\
-              <p class="carComponentText" brand="brand">{{brand}}</p>\
-              <p class="carComponentText" model="model">{{model}}</p>\
-              <p class="carComponentText" brand="brand">{{brand}}</p>\
-              <p class="carComponentText" year="year">{{year}}</p>\
-              <p class="carComponentText" onSaleSince="onSaleSince">{{onSaleSince}}</p>\
-              <p class="carComponentText" price="price">{{price | addEuro }}</p>\
-              <p class="carComponentText" pvp="pvp">{{pvp | addEuro }}</p>\
-              <div>\
-                <button class="standardBtn" (click)="deleteCar()">Rebajar</button>\
+  template: '<div class="blackCenteredDiv d-flex justify-content-center">\
+              <img class="carComponentImages" src={{image}} image="image">\
+              <p class="carComponentText d-flex align-items-center justify-content-center" model="model">{{model}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" brand="brand">{{brand}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" year="year">{{year}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" onSaleSince="onSaleSince">{{onSaleSince | dateOnFormat}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" price="price">{{price | addEuro }}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" price="price">{{price | getPvp }}</p>\
+              <div class="carComponentText col align-items-center justify-content-center">\
+                <button class="standardBtn" (click)="discount()">Rebajar</button>\
                 <button class="standardBtn" (click)="deleteCar()">Vendido</button>\
               </div>\
             </div>',
@@ -117,7 +116,6 @@ export class carComponent {
   year : number;
   onSaleSince : Date;
   price : number;
-  pvp : number;
   constructor(private hostComponent: ElementRef<HTMLElement>){
     this.image = "Imagen no disponible"
     this.brand = "undefined"
@@ -125,13 +123,16 @@ export class carComponent {
     this.year = 0;
     this.onSaleSince = new Date()
     this.price = 999999
-    this.pvp = (this.price * 1.1)
   }
 
   // Al pulsar en el boton se elimina el componente
   // Se envia el evento al componente padre para actualizar la cuenta antes de su eliminacion
   deleteCar(): void{
       this.hostComponent.nativeElement.remove();
+  }
+
+  discount(): void{
+    this.price = Math.floor(this.price * 0.9)
   }
 }
 
@@ -144,5 +145,25 @@ export class carComponent {
 export class addEuro implements PipeTransform{
  transform(price : number) {
    return price.toString() + " €"
+ }
+}
+
+@Pipe({
+  name: 'getPvp'
+})
+export class getPvp implements PipeTransform{
+ transform(price : number) {
+   let pvp = Math.floor(price * 1.1)
+   return pvp.toString() + " €"
+ }
+}
+
+@Pipe({
+  name: 'dateOnFormat'
+})
+export class dateOnFormat implements PipeTransform{
+ constructor(public datepipe: DatePipe){}
+ transform(date : Date) {
+   return this.datepipe.transform(date, 'dd-MM-yyyy')
  }
 }
