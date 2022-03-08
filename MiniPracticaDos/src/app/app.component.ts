@@ -23,63 +23,67 @@ export class AppComponent {
     <div class="fullWidthDiv">\
       <p class="secondaryTitle">Filtrar por:</p>\
       <select [(ngModel)]="currentSelectionData">\
-        <option  *ngFor="let currentSelectionData of filtersList; let i=index;">{{currentSelectionData}}</option>\
+        <option value="" selected disabled>Selecciona la categoria</option>\
+        <option  *ngFor="let currentSelectionData of filtersList">{{currentSelectionData}}</option>\
       </select>\
+      <input placeholder="Texto a filtrar" (input)="filtreElements()" [(ngModel)]="filterKeyword">\
     </div>\
-    <div class="dataTitlesTableFormat d-flex justify-content-center">\
-      <p class="carsTableTitles">Foto</p><p class="carsTableTitles" (click)=orderByBrand()>Marca</p><p class="carsTableTitles" (click)=orderByModel()>Modelo</p>\
-      <p class="carsTableTitles" (click)=orderByYear()>Año</p><p class="carsTableTitles" (click)=orderBySaleDate()>En venta desde</p><p class="carsTableTitles" (click)=orderByPrice()>Precio</p>\
-      <p class="carsTableTitles" (click)=orderByPrice()>PVP</p><p class="carsTableTitles">Acciones</p>\
+    <div class="dataTitlesTableFormat d-flex justify-content-center mt-5 mb-5">\
+      <button class="carsTableTitles">Foto</button>\
+      <button class="carsTableTitles"  [ngClass]="{carsTableTitles : !orderingByBrand, carsTableTitlesSelected : orderingByBrand}" (click)=orderByBrand()>Marca</button>\
+      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByModel, carsTableTitlesSelected : orderingByModel}" (click)=orderByModel()>Modelo</button>\
+      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByYear, carsTableTitlesSelected : orderingByYear}" (click)=orderByYear()>Año</button>\
+      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingBySaleDate, carsTableTitlesSelected : orderingBySaleDate}" (click)=orderBySaleDate()>En venta desde</button>\
+      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByPrice, carsTableTitlesSelected : orderingByPrice}" (click)=orderByPrice()>Precio</button>\
+      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByPrice, carsTableTitlesSelected : orderingByPrice}" (click)=orderByPrice()>PVP</button>\
+      <button class="carsTableTitles">Acciones</button>\
     </div>\
     <ng-template carDinamicComponentHost></ng-template>',
   styleUrls: ['./app.component.scss']
 })
 
 export class billMaker implements AfterViewInit {  
-  currentSelectionData : string;
-  filtersList: Array<string>
+  @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
+  currentSelectionData : string = "";
+  filtersList: Array<string> = ["Modelo", "Marca", "Año"];
+  orderingByBrand : boolean = false;
+  orderingByModel : boolean = false;
+  orderingByYear : boolean = false;
+  orderingByPrice : boolean = false;
+  orderingByPvp : boolean = false;
+  orderingBySaleDate : boolean = false;
+  orderingByState : boolean = false;
+  filterKeyword : string = "";
   // Creación del observable para que los hijos sepan cuando destruirse
-  deleteSons$: Subject<any>;
-  deleteSons$Obs: Observable<any>;
+  deleteSons$: Subject<any> = new Subject();
+  deleteSons$Obs: Observable<any> = this.deleteSons$.asObservable();
   carsList = [{image: "assets/images/320.jpeg", brand: "BMW", model: "320", year: 2015, price: 11000, state: "Bueno", onSaleDate: new Date('11-09-2021'), id: Guid.newGuid()},
               {image: "assets/images/claseA.jpeg", brand: "Mercedes", model: "Clase A", year: 2018, price: 14000, state: "Bueno", onSaleDate: new Date('03-11-2021'), id: Guid.newGuid()},
               {image: "assets/images/taycan.jpeg", brand: "Porsche", model: "Taycan", year: 2021, price: 64000, state: "Bueno", onSaleDate: new Date(), id: Guid.newGuid()},
               {image: "assets/images/multipla.jpeg", brand: "Fiat", model: "Multipla", year: 2008, price: 2000, state: "Malo", onSaleDate: new Date(), id: Guid.newGuid()},
               {image: "assets/images/saxo.jpeg", brand: "Citroen", model: "Saxo", year: 2006, price: 1800, state: "Malo", onSaleDate: new Date(), id: Guid.newGuid()},
-              {image: "assets/images/mustang.jpeg", brand: "Ford", model: "Mustang", year: 2016, price: 13400, state: "Bueno", onSaleDate: new Date('07-04-2020'), id: Guid.newGuid()}]
-  @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
-  constructor(){
-    this.currentSelectionData = "Selecciona un plato a añadir";
-    this.deleteSons$ = new Subject();
-    this.deleteSons$Obs = this.deleteSons$.asObservable();
-    this.filtersList = ["Modelo", "Marca", "Año"];
-  }
-
+              {image: "assets/images/mustang.jpeg", brand: "Ford", model: "Mustang", year: 2016, price: 13400, state: "Bueno", onSaleDate: new Date('07-04-2020'), id: Guid.newGuid()}];
+  carsListBackUp = [...this.carsList];
+  
+  
   ngAfterViewInit(): void {
     this.createAllComponents();
   }
+
   private createAllComponents() {
     for (let i in this.carsList) {
       this.createNewCarComponent(Number(i));
     }
   }
 
-  /*
-  upBill(): void{
-    let dataSplited = this.currentSelectionData.split(' (')
-    let index = this.filtersList.indexOf(dataSplited[0])
-    // Se comprueba que se ha seleccionado un plato
-    if (index > -1){
-      // Se crea un nuevo componente con su informacion
-      this.createNewcarComponent(index);
-      // Se añade el precio a la cuenta total
-      this.upCounter(this.pricesList[index])
-    }
-    else{
-      alert("Selecciona el plato a añadir");
-    }
+  private removeOrderingSelection(): void {
+    this.orderingByBrand = false;
+    this.orderingByModel = false;
+    this. orderingByYear = false;
+    this.orderingByPrice = false;
+    this. orderingBySaleDate = false;
+    this.orderingByState = false;
   }
-  */
 
   private createNewCarComponent(index: number) {
     const newComponent = this.dynamicHost.viewContainerRef.createComponent(carComponent);
@@ -92,7 +96,6 @@ export class billMaker implements AfterViewInit {
     newComponent.instance.onSaleSince = this.carsList[index].onSaleDate;
     // Se asigna un id unico a cada coche en venta dado que con los datos actuales no hay identificadores univocos
     newComponent.instance.id = this.carsList[index].id;
-    newComponent.instance.parent = this;
     if (newComponent.instance.state == "Malo"){
       newComponent.instance.myclass = "carComponentBad d-flex align-items-center justify-content-center";
     }
@@ -105,87 +108,176 @@ export class billMaker implements AfterViewInit {
     });
   }
 
-  // Como en la lista de coches acaban primeros los ultimos elementos de la lista se invierte la comparacion
-
-  orderByBrand() : void{
-    this.deleteSons$.next(false);
-    for (let i in this.carsList) {
-      for (let j in this.carsList){
-        if (this.carsList[i].brand < this.carsList[j].brand && i != j){
-          let auxElem = this.carsList[i];
-          this.carsList[i] = this.carsList[j];
-          this.carsList[j] = auxElem;
-        }
-      }
+  filtreElements(): void{
+    if (this.currentSelectionData == "Marca"){
+      this.filtreByBrand();
     }
-    this.createAllComponents()
+    else if (this.currentSelectionData == "Modelo"){
+      this.filtreByModel();
+    }
+    else if (this.currentSelectionData == "Año"){
+      this.filtreByYear();
+    }
   }
 
-  orderByModel() : void{
-    this.deleteSons$.next(0);
-    for (let i in this.carsList) {
-      for (let j in this.carsList){
-        if (this.carsList[i].model < this.carsList[j].model && i != j){
-          let auxElem = this.carsList[i];
-          this.carsList[i] = this.carsList[j];
-          this.carsList[j] = auxElem;
-        }
+  private filtreByBrand(): void {
+    this.deleteSons$.next(false);
+    this.carsList = [];
+    for (let i = 0; i < this.carsListBackUp.length; i++){
+      if (this.carsListBackUp[i].brand.substring(0, this.filterKeyword.length).toLowerCase() == this.filterKeyword.toLowerCase() ){
+        this.carsList.push(this.carsListBackUp[i]);
       }
     }
-    this.createAllComponents()
+    this.createAllComponents();
+  }
+
+  private filtreByModel(): void {
+    this.deleteSons$.next(false);
+    this.carsList = [];
+    for (let i = 0; i < this.carsListBackUp.length; i++){
+      if (this.carsListBackUp[i].model.substring(0, this.filterKeyword.length).toLowerCase()  == this.filterKeyword.toLowerCase() ){
+        this.carsList.push(this.carsListBackUp[i]);
+      }
+    }
+    this.createAllComponents();
+  }
+
+  private filtreByYear(): void {
+    this.deleteSons$.next(false);
+    this.carsList = [];
+    for (let i = 0; i < this.carsListBackUp.length; i++){
+      if (this.carsListBackUp[i].year.toString().substring(0, this.filterKeyword.length) == this.filterKeyword){
+        this.carsList.push(this.carsListBackUp[i]);
+      }
+    }
+    this.createAllComponents();
+  }
+
+  private resetFilters() {
+    this.removeOrderingSelection();
+    this.deleteSons$.next(false);
+    this.carsList = [...this.carsListBackUp];
+    this.createAllComponents();
+  }
+
+
+  private enableFiltering() {
+    this.deleteSons$.next(false);
+    this.removeOrderingSelection();
+  }
+
+
+  // Como en la lista de coches acaban primeros los ultimos elementos de la lista se invierte la comparacion
+  orderByBrand() : void{
+    if (this.orderingByBrand == true) {
+      this.resetFilters();
+    }
+    else{
+      this.enableFiltering();
+      for (let i in this.carsList) {
+        for (let j in this.carsList){
+          if (this.carsList[i].brand < this.carsList[j].brand && i != j){
+            let auxElem = this.carsList[i];
+            this.carsList[i] = this.carsList[j];
+            this.carsList[j] = auxElem;
+          }
+        }
+      }
+      this.createAllComponents()
+      this.orderingByBrand = true;
+    }
+  }
+
+
+  orderByModel() : void{
+    if (this.orderingByModel == true) {
+      this.resetFilters();
+    }
+    else{
+      this.enableFiltering();
+      for (let i in this.carsList) {
+        for (let j in this.carsList){
+          if (this.carsList[i].model < this.carsList[j].model && i != j){
+            let auxElem = this.carsList[i];
+            this.carsList[i] = this.carsList[j];
+            this.carsList[j] = auxElem;
+          }
+        }
+      }
+      this.createAllComponents()
+      this.orderingByModel = true;
+    }
   }
 
   orderByPrice() : void{
-    this.deleteSons$.next(false);
-    for (let i in this.carsList) {
-      for (let j in this.carsList){
-        if (this.carsList[i].price < this.carsList[j].price && i != j){
-          let auxElem = this.carsList[i];
-          this.carsList[i] = this.carsList[j];
-          this.carsList[j] = auxElem;
+    if (this.orderingByPrice == true) {
+      this.resetFilters();
+    }
+    else{
+      this.enableFiltering();
+      for (let i in this.carsList) {
+        for (let j in this.carsList){
+          if (this.carsList[i].price < this.carsList[j].price && i != j){
+            let auxElem = this.carsList[i];
+            this.carsList[i] = this.carsList[j];
+            this.carsList[j] = auxElem;
+          }
         }
       }
+      this.createAllComponents()
+      this.orderingByPrice = true;
     }
-    this.createAllComponents()
   }
 
   orderByYear() : void{
-    this.deleteSons$.next(false);
-    for (let i in this.carsList) {
-      for (let j in this.carsList){
-        if (this.carsList[i].year < this.carsList[j].year && i != j){
-          let auxElem = this.carsList[i];
-          this.carsList[i] = this.carsList[j];
-          this.carsList[j] = auxElem;
+    if (this.orderingByYear == true) {
+      this.resetFilters();
+    }
+    else{
+      this.enableFiltering();
+      for (let i in this.carsList) {
+        for (let j in this.carsList){
+          if (this.carsList[i].year < this.carsList[j].year && i != j){
+            let auxElem = this.carsList[i];
+            this.carsList[i] = this.carsList[j];
+            this.carsList[j] = auxElem;
+          }
         }
       }
+      this.createAllComponents()
+      this.orderingByYear = true;
     }
-    this.createAllComponents()
   }
 
   orderBySaleDate() : void{
-    this.deleteSons$.next(false);
-    for (let i in this.carsList) {
-      for (let j in this.carsList){
-        if (this.carsList[i].onSaleDate < this.carsList[j].onSaleDate && i != j){
-          let auxElem = this.carsList[i];
-          this.carsList[i] = this.carsList[j];
-          this.carsList[j] = auxElem;
+    if (this.orderingBySaleDate == true) {
+      this.resetFilters();
+    }
+    else{
+      this.enableFiltering();
+      for (let i in this.carsList) {
+        for (let j in this.carsList){
+          if (this.carsList[i].onSaleDate < this.carsList[j].onSaleDate && i != j){
+            let auxElem = this.carsList[i];
+            this.carsList[i] = this.carsList[j];
+            this.carsList[j] = auxElem;
+          }
         }
       }
+      this.createAllComponents()
+      this.orderingBySaleDate = true;
     }
-    this.createAllComponents()
   }
 
 }
 
 
 
-
 @Component({
   selector: 'carComponent',
   template: '<div class="blackCenteredDiv d-flex justify-content-center">\
-              <img class="carComponentImages" src={{image}} image="image">\
+              <img class="carComponentImages" src={{image}} image="image" (error)="setErrorImageMessage()" *ngIf="availableImage">\
+              <p class="errorImageText d-flex align-items-center justify-content-center" *ngIf="!availableImage">Imagen no disponible</p>\
               <p class="carComponentText d-flex align-items-center justify-content-center" model="brand">{{brand}}</p>\
               <p class="carComponentText d-flex align-items-center justify-content-center" brand="model">{{model}}</p>\
               <p class="carComponentText d-flex align-items-center justify-content-center" year="year">{{year}}</p>\
@@ -204,30 +296,24 @@ export class billMaker implements AfterViewInit {
 })
 
 export class carComponent {  
-  image : string;
-  brand : string;
-  model : string;
-  year : number;
-  onSaleSince : Date;
-  price : number;
-  state : string;
-  myclass : string;
-  parent : any;
+  image : string = "Imagen no disponible";
+  brand : string = "undefined";
+  model : string = "undefined";
+  year : number = 0;
+  onSaleSince : Date = new Date();
+  price : number = 999999;
+  state : string = "undefined";
+  myclass : string = "carComponentGood d-flex align-items-center justify-content-center";
   id: any;
-  returnDeletedCarInfo$: Subject<any>;
-  returnDeletedCarInfo$Obs: Observable<any>;
+  availableImage: boolean = true;
+  returnDeletedCarInfo$: Subject<any> = new Subject();
+  returnDeletedCarInfo$Obs: Observable<any> = this.returnDeletedCarInfo$.asObservable();
 
   constructor(private hostComponent: ElementRef<HTMLElement>){
-    this.image = "Imagen no disponible";
-    this.brand = "undefined";
-    this.model = "undefined";
-    this.year = 0;
-    this.onSaleSince = new Date();
-    this.price = 999999;
-    this.state = "undefined";
-    this.myclass = "carComponentGood d-flex align-items-center justify-content-center";
-    this.returnDeletedCarInfo$ = new Subject();
-    this.returnDeletedCarInfo$Obs = this.returnDeletedCarInfo$.asObservable();
+  }
+
+  setErrorImageMessage(): void{
+    this.availableImage = false
   }
 
   // Al pulsar en el boton se elimina el componente

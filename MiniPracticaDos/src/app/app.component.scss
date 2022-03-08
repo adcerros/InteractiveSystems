@@ -1,14 +1,13 @@
 //Colors
 $mainColor: white;
 $secondaryColor: black;
-$mainTextColor: black;
-$secondaryTextColor: white;
 //Fonts
 $mainType: Helvetica;
 //Text sizes
 $xlongSizeText: calc(1.5vh + 1.5vw);
 $longSizeText: calc(1vh + 1vw);
 $mediumSizeText: calc(0.8vh + 0.8vw);
+$littleSizeText: calc(0.6vh + 0.6vw);
 //Margin sizes
 $xxLongMargin: calc(5vw + 2.5vh);
 $longMargin: calc(1vw + 1vh);
@@ -93,7 +92,6 @@ $centeredDivsLeftMargin: 10vw;
     height: $blackCenteredDivsHeight;
     margin-left: $blackCenteredDivsWidth;
     border-radius: $mediumMargin;
-    margin-top: $mediumMargin;
 }
 
 .standardBtn{
@@ -106,19 +104,10 @@ $centeredDivsLeftMargin: 10vw;
     font-family: $mainType;
     border-radius: $semiCircleBorderRadius;
     background-color: $mainColor;
-    color: $mainTextColor;
+    color: $secondaryColor;
     border: 1px solid $mainColor;
 }
 
-.addBtn{
-    margin-left: $littleMargin;
-    margin-right: $littleMargin;
-    font-size: $mediumSizeText;
-    font-family: $mainType;
-    border-radius: $semiCircleBorderRadius;
-    display: inline-block;
-    border: 1px solid $secondaryColor;
-}
 
 .carsTableTitles{
     position: relative;
@@ -128,15 +117,47 @@ $centeredDivsLeftMargin: 10vw;
     font-weight: bold;
     width: $blackCenteredDivsWidth;
     text-align: center;
+    font-family: $mainType;
+    background-color: $mainColor;
+    border-radius: 10px;
+    margin-left: 1px;
+    margin-right: 1px;
+    border: 1px solid $secondaryColor;
 }
 
+.carsTableTitlesSelected{
+    position: relative;
+    display: inline-block;
+    font-size: $longSizeText;
+    font-family: $mainType;
+    font-weight: bold;
+    width: $blackCenteredDivsWidth;
+    text-align: center;
+    font-family: $mainType;
+    color: $mainColor;
+    background-color: $secondaryColor;
+    border-radius: 10px;
+    margin-left: 1px;
+    margin-right: 1px;
+    border: none;
+}
 
 .carComponentText{
     width: $blackCenteredDivsWidth;
     height: $blackCenteredDivsHeight;
     font-size: $mediumSizeText;
     font-family: $mainType;
-    color: $secondaryTextColor;
+    color: $mainColor;
+}
+
+.errorImageText{
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
+    font-size: $littleSizeText;
+    font-family: $mainType;
+    color: $mainColor;
+    padding-right: 2vw;
+    padding-left: 2vw;
 }
 
 .carComponentGood{
@@ -145,7 +166,8 @@ $centeredDivsLeftMargin: 10vw;
     height: $blackCenteredDivsHeight;
     font-size: $mediumSizeText;
     font-family: $mainType;
-    color: $secondaryTextColor;
+    color: $mainColor;
+    border-radius: 10px;
     background-color: green;
 }
 
@@ -155,7 +177,8 @@ $centeredDivsLeftMargin: 10vw;
     height: $blackCenteredDivsHeight;
     font-size: $mediumSizeText;
     font-family: $mainType;
-    color: $secondaryTextColor;
+    color: $mainColor;
+    border-radius: 10px;
     background-color: red;
 }
 
@@ -164,7 +187,8 @@ $centeredDivsLeftMargin: 10vw;
     height: $blackCenteredDivsHeight;
     font-size: $mediumSizeText;
     font-family: $mainType;
-    color: $secondaryTextColor;
+    color: $mainColor;
     border-top-left-radius: $mediumMargin;
     border-bottom-left-radius: $mediumMargin;
 }
+
