@@ -45,7 +45,7 @@ export class AppComponent {
 export class billMaker implements AfterViewInit {  
   @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
   currentSelectionData : string = "";
-  filtersList: Array<string> = ["Modelo", "Marca", "Año", "Precio (menor que)", "Precio (mayor que)"];
+  filtersList: Array<string> = ["Modelo", "Marca", "Año", "Precio (menor que)", "Precio (mayor que)", "Fecha de venta (mas antigua que)", "Fecha de venta (mas reciente que)"];
   orderingByBrand : boolean = false;
   orderingByModel : boolean = false;
   orderingByYear : boolean = false;
@@ -124,6 +124,12 @@ export class billMaker implements AfterViewInit {
     else if (this.currentSelectionData == "Precio (mayor que)"){
       this.filtreByPriceMoreThan();
     }
+    else if (this.currentSelectionData == "Fecha de venta (mas antigua que)"){
+      this.filtreBySaleDateLessThan();
+    }
+    else if (this.currentSelectionData == "Fecha de venta (mas reciente que)"){
+      this.filtreBySaleDateMoreThan();
+    }
   }
 
   private filtreByBrand(): void {
@@ -175,6 +181,30 @@ export class billMaker implements AfterViewInit {
     this.carsList = [];
     for (let i = 0; i < this.carsListBackUp.length; i++){
       if (this.carsListBackUp[i].price <= Number(this.filterKeyword)){
+        this.carsList.push(this.carsListBackUp[i]);
+      }
+    }
+    this.createAllComponents();
+  }
+
+  private filtreBySaleDateLessThan(): void {
+    this.deleteSons$.next(false);
+    this.carsList = [];
+    for (let i = 0; i < this.carsListBackUp.length; i++){
+      let currentDate = new Date(this.filterKeyword)
+      if (this.carsListBackUp[i].onSaleDate <= currentDate){
+        this.carsList.push(this.carsListBackUp[i]);
+      }
+    }
+    this.createAllComponents();
+  }
+
+  private filtreBySaleDateMoreThan(): void {
+    this.deleteSons$.next(false);
+    this.carsList = [];
+    for (let i = 0; i < this.carsListBackUp.length; i++){
+      let currentDate = new Date(this.filterKeyword)
+      if (this.carsListBackUp[i].onSaleDate >= currentDate){
         this.carsList.push(this.carsListBackUp[i]);
       }
     }
