@@ -105,6 +105,7 @@ export class billMaker implements AfterViewInit {
     newComponent.instance.returnDeletedCarInfo$Obs.subscribe(currentCarId => {
       let index = this.carsList.map(object => object.id).indexOf(currentCarId);
       this.carsList.splice(index, 1)
+      this.carsListBackUp.splice(index, 1)
     });
   }
 
@@ -132,6 +133,7 @@ export class billMaker implements AfterViewInit {
         this.filtreBySaleDateMoreThan();
       }
     }
+    // Esta comprobación evita errores con la cadena de entrada vacia
     else{
       this.carsList = [...this.carsListBackUp];
       this.deleteSons$.next(false);
