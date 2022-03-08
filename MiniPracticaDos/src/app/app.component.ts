@@ -45,7 +45,7 @@ export class AppComponent {
 export class billMaker implements AfterViewInit {  
   @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
   currentSelectionData : string = "";
-  filtersList: Array<string> = ["Modelo", "Marca", "Año"];
+  filtersList: Array<string> = ["Modelo", "Marca", "Año", "Precio (menor que)", "Precio (mayor que)"];
   orderingByBrand : boolean = false;
   orderingByModel : boolean = false;
   orderingByYear : boolean = false;
@@ -118,6 +118,12 @@ export class billMaker implements AfterViewInit {
     else if (this.currentSelectionData == "Año"){
       this.filtreByYear();
     }
+    else if (this.currentSelectionData == "Precio (menor que)"){
+      this.filtreByPriceLessThan();
+    }
+    else if (this.currentSelectionData == "Precio (mayor que)"){
+      this.filtreByPriceMoreThan();
+    }
   }
 
   private filtreByBrand(): void {
@@ -147,6 +153,28 @@ export class billMaker implements AfterViewInit {
     this.carsList = [];
     for (let i = 0; i < this.carsListBackUp.length; i++){
       if (this.carsListBackUp[i].year.toString().substring(0, this.filterKeyword.length) == this.filterKeyword){
+        this.carsList.push(this.carsListBackUp[i]);
+      }
+    }
+    this.createAllComponents();
+  }
+
+  private filtreByPriceMoreThan(): void {
+    this.deleteSons$.next(false);
+    this.carsList = [];
+    for (let i = 0; i < this.carsListBackUp.length; i++){
+      if (this.carsListBackUp[i].price >= Number(this.filterKeyword)){
+        this.carsList.push(this.carsListBackUp[i]);
+      }
+    }
+    this.createAllComponents();
+  }
+
+  private filtreByPriceLessThan(): void {
+    this.deleteSons$.next(false);
+    this.carsList = [];
+    for (let i = 0; i < this.carsListBackUp.length; i++){
+      if (this.carsListBackUp[i].price <= Number(this.filterKeyword)){
         this.carsList.push(this.carsListBackUp[i]);
       }
     }
