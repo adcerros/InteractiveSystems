@@ -109,26 +109,33 @@ export class billMaker implements AfterViewInit {
   }
 
   filtreElements(): void{
-    if (this.currentSelectionData == "Marca"){
-      this.filtreByBrand();
+    if (this.filterKeyword != undefined && this.filterKeyword != null && this.filterKeyword != ""){
+      if (this.currentSelectionData == "Marca"){
+        this.filtreByBrand();
+      }
+      else if (this.currentSelectionData == "Modelo"){
+        this.filtreByModel();
+      }
+      else if (this.currentSelectionData == "Año"){
+        this.filtreByYear();
+      }
+      else if (this.currentSelectionData == "Precio (menor que)"){
+        this.filtreByPriceLessThan();
+      }
+      else if (this.currentSelectionData == "Precio (mayor que)"){
+        this.filtreByPriceMoreThan();
+      }
+      else if (this.currentSelectionData == "Fecha de venta (mas antigua que)"){
+        this.filtreBySaleDateLessThan();
+      }
+      else if (this.currentSelectionData == "Fecha de venta (mas reciente que)"){
+        this.filtreBySaleDateMoreThan();
+      }
     }
-    else if (this.currentSelectionData == "Modelo"){
-      this.filtreByModel();
-    }
-    else if (this.currentSelectionData == "Año"){
-      this.filtreByYear();
-    }
-    else if (this.currentSelectionData == "Precio (menor que)"){
-      this.filtreByPriceLessThan();
-    }
-    else if (this.currentSelectionData == "Precio (mayor que)"){
-      this.filtreByPriceMoreThan();
-    }
-    else if (this.currentSelectionData == "Fecha de venta (mas antigua que)"){
-      this.filtreBySaleDateLessThan();
-    }
-    else if (this.currentSelectionData == "Fecha de venta (mas reciente que)"){
-      this.filtreBySaleDateMoreThan();
+    else{
+      this.carsList = [...this.carsListBackUp];
+      this.deleteSons$.next(false);
+      this.createAllComponents();
     }
   }
 
@@ -190,8 +197,8 @@ export class billMaker implements AfterViewInit {
   private filtreBySaleDateLessThan(): void {
     this.deleteSons$.next(false);
     this.carsList = [];
+    let currentDate = new Date(this.filterKeyword)
     for (let i = 0; i < this.carsListBackUp.length; i++){
-      let currentDate = new Date(this.filterKeyword)
       if (this.carsListBackUp[i].onSaleDate <= currentDate){
         this.carsList.push(this.carsListBackUp[i]);
       }
@@ -202,8 +209,8 @@ export class billMaker implements AfterViewInit {
   private filtreBySaleDateMoreThan(): void {
     this.deleteSons$.next(false);
     this.carsList = [];
+    let currentDate = new Date(this.filterKeyword)
     for (let i = 0; i < this.carsListBackUp.length; i++){
-      let currentDate = new Date(this.filterKeyword)
       if (this.carsListBackUp[i].onSaleDate >= currentDate){
         this.carsList.push(this.carsListBackUp[i]);
       }
