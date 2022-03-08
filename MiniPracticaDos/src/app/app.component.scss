@@ -139,6 +139,26 @@ $centeredDivsLeftMargin: 10vw;
     color: $secondaryTextColor;
 }
 
+.carComponentGood{
+    vertical-align: middle;
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    color: $secondaryTextColor;
+    background-color: green;
+}
+
+.carComponentBad{
+    text-align: center;
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    color: $secondaryTextColor;
+    background-color: red;
+}
+
 .carComponentImages{
     width: $blackCenteredDivsWidth;
     height: $blackCenteredDivsHeight;

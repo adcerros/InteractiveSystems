@@ -4,7 +4,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent, billMaker, carComponent, addEuro, dateOnFormat, getPvp} from './app.component';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common'
+import { DatePipe,CommonModule } from '@angular/common'
 
 
 @NgModule({
@@ -20,7 +20,8 @@ import { DatePipe } from '@angular/common'
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule  
+    FormsModule,
+    CommonModule 
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]

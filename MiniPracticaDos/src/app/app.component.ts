@@ -27,38 +27,45 @@ export class AppComponent {
       </select>\
     </div>\
     <div class="dataTitlesTableFormat d-flex justify-content-center">\
-      <p class="carsTableTitles">Foto</p><p class="carsTableTitles">Marca</p><p class="carsTableTitles">Modelo</p>\
-      <p class="carsTableTitles">Año</p><p class="carsTableTitles">En venta desde</p><p class="carsTableTitles">Precio</p>\
-      <p class="carsTableTitles">PVP</p><p class="carsTableTitles">Acciones</p>\
+      <p class="carsTableTitles">Foto</p><p class="carsTableTitles" (click)=orderByBrand()>Marca</p><p class="carsTableTitles" (click)=orderByModel()>Modelo</p>\
+      <p class="carsTableTitles" (click)=orderByYear()>Año</p><p class="carsTableTitles" (click)=orderBySaleDate()>En venta desde</p><p class="carsTableTitles" (click)=orderByPrice()>Precio</p>\
+      <p class="carsTableTitles" (click)=orderByPrice()>PVP</p><p class="carsTableTitles">Acciones</p>\
     </div>\
     <ng-template carDinamicComponentHost></ng-template>',
   styleUrls: ['./app.component.scss']
 })
 
 export class billMaker implements AfterViewInit {  
-  imagesList : Array<string>;
-  filtersList : Array<string>;
-  brandsList : Array<string>;
-  modelsList : Array<string>;
-  yearsList : Array<number>;
-  pricesList : Array<number>;
   currentSelectionData : string;
+  filtersList: Array<string>
+  // Creación del observable para que los hijos sepan cuando destruirse
+  deleteSons : boolean;
+  deleteSons$: Subject<boolean>;
+  deleteSons$Obs: Observable<boolean>;
+  carsList = [{image: "assets/images/320.jpeg", brand: "BMW", model: "320", year: 2015, price: 11000, state: "Bueno", onSaleDate: new Date('11-09-2021')},
+              {image: "assets/images/claseA.jpeg", brand: "Mercedes", model: "Clase A", year: 2018, price: 14000, state: "Bueno", onSaleDate: new Date('03-11-2021')},
+              {image: "assets/images/taycan.jpeg", brand: "Porsche", model: "Taycan", year: 2021, price: 64000, state: "Bueno", onSaleDate: new Date()},
+              {image: "assets/images/multipla.jpeg", brand: "Fiat", model: "Multipla", year: 2008, price: 2000, state: "Malo", onSaleDate: new Date()},
+              {image: "assets/images/saxo.jpeg", brand: "Citroen", model: "Saxo", year: 2006, price: 1800, state: "Malo", onSaleDate: new Date()},
+              {image: "assets/images/mustang.jpeg", brand: "Ford", model: "Mustang", year: 2016, price: 13400, state: "Bueno", onSaleDate: new Date('07-04-2020')}]
   @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
   constructor(){
-    this.imagesList = ["assets/images/320.jpeg", "assets/images/claseA.jpeg", "assets/images/taycan.jpeg", "assets/images/multipla.jpeg", "assets/images/saxo.jpeg", "assets/images/mustang.jpeg"]
-    this.filtersList = ["Modelo", "Marca", "Año"];
-    this.brandsList = ["BMW", "Mercedes", "Porsche", "Fiat", "Citroen", "Ford"];
-    this.modelsList = ["320", "Clase A" , "Taycan", "Multipla", "Saxo", "Mustang"];
-    this.yearsList = [2015, 2018, 2021, 2008, 2006, 2016]
-    this.pricesList = [11000, 14000, 64000, 2000, 1800, 13400];
     this.currentSelectionData = "Selecciona un plato a añadir";
+    this.deleteSons$ = new Subject();
+    this.deleteSons$Obs = this.deleteSons$.asObservable();
+    this.deleteSons = false;
+    this.filtersList = ["Modelo", "Marca", "Año"];
   }
 
   ngAfterViewInit(): void {
-    for (let i in this.imagesList){
+    this.createAllComponents();
+  }
+  private createAllComponents() {
+    for (let i in this.carsList) {
       this.createNewCarComponent(Number(i));
     }
   }
+
   /*
   upBill(): void{
     let dataSplited = this.currentSelectionData.split(' (')
@@ -78,13 +85,96 @@ export class billMaker implements AfterViewInit {
 
   private createNewCarComponent(index: number) {
     const newComponent = this.dynamicHost.viewContainerRef.createComponent(carComponent);
-    newComponent.instance.image = this.imagesList[index];
-    newComponent.instance.brand = this.brandsList[index];
-    newComponent.instance.model = this.modelsList[index];
-    newComponent.instance.year = this.yearsList[index];
-    newComponent.instance.price = this.pricesList[index];
+    newComponent.instance.image = this.carsList[index].image;
+    newComponent.instance.brand = this.carsList[index].brand;
+    newComponent.instance.model = this.carsList[index].model;
+    newComponent.instance.year = this.carsList[index].year;
+    newComponent.instance.price = this.carsList[index].price;
+    newComponent.instance.state = this.carsList[index].state;
+    newComponent.instance.onSaleSince = this.carsList[index].onSaleDate;
+    newComponent.instance.parent = this;
+    if (newComponent.instance.state == "Malo"){
+      newComponent.instance.myclass = "carComponentBad d-flex align-items-center justify-content-center";
+    }
+    this.deleteSons$Obs.subscribe(deleteSons => {
+      newComponent.destroy()
+    });
   }
+
+  // Como en la lista de coches acaban primeros los ultimos elementos de la lista se invierte la comparacion
+
+  orderByBrand() : void{
+    this.deleteSons$.next(false);
+    for (let i in this.carsList) {
+      for (let j in this.carsList){
+        if (this.carsList[i].brand < this.carsList[j].brand && i != j){
+          let auxElem = this.carsList[i];
+          this.carsList[i] = this.carsList[j];
+          this.carsList[j] = auxElem;
+        }
+      }
+    }
+    this.createAllComponents()
+  }
+
+  orderByModel() : void{
+    this.deleteSons$.next(false);
+    for (let i in this.carsList) {
+      for (let j in this.carsList){
+        if (this.carsList[i].model < this.carsList[j].model && i != j){
+          let auxElem = this.carsList[i];
+          this.carsList[i] = this.carsList[j];
+          this.carsList[j] = auxElem;
+        }
+      }
+    }
+    this.createAllComponents()
+  }
+
+  orderByPrice() : void{
+    this.deleteSons$.next(false);
+    for (let i in this.carsList) {
+      for (let j in this.carsList){
+        if (this.carsList[i].price < this.carsList[j].price && i != j){
+          let auxElem = this.carsList[i];
+          this.carsList[i] = this.carsList[j];
+          this.carsList[j] = auxElem;
+        }
+      }
+    }
+    this.createAllComponents()
+  }
+
+  orderByYear() : void{
+    this.deleteSons$.next(false);
+    for (let i in this.carsList) {
+      for (let j in this.carsList){
+        if (this.carsList[i].year < this.carsList[j].year && i != j){
+          let auxElem = this.carsList[i];
+          this.carsList[i] = this.carsList[j];
+          this.carsList[j] = auxElem;
+        }
+      }
+    }
+    this.createAllComponents()
+  }
+
+  orderBySaleDate() : void{
+    this.deleteSons$.next(false);
+    for (let i in this.carsList) {
+      for (let j in this.carsList){
+        if (this.carsList[i].onSaleDate < this.carsList[j].onSaleDate && i != j){
+          let auxElem = this.carsList[i];
+          this.carsList[i] = this.carsList[j];
+          this.carsList[j] = auxElem;
+        }
+      }
+    }
+    this.createAllComponents()
+  }
+
 }
+
 
 
 
@@ -92,11 +182,11 @@ export class billMaker implements AfterViewInit {
   selector: 'carComponent',
   template: '<div class="blackCenteredDiv d-flex justify-content-center">\
               <img class="carComponentImages" src={{image}} image="image">\
-              <p class="carComponentText d-flex align-items-center justify-content-center" model="model">{{model}}</p>\
-              <p class="carComponentText d-flex align-items-center justify-content-center" brand="brand">{{brand}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" model="brand">{{brand}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" brand="model">{{model}}</p>\
               <p class="carComponentText d-flex align-items-center justify-content-center" year="year">{{year}}</p>\
               <p class="carComponentText d-flex align-items-center justify-content-center" onSaleSince="onSaleSince">{{onSaleSince | dateOnFormat}}</p>\
-              <p class="carComponentText d-flex align-items-center justify-content-center" price="price">{{price | addEuro }}</p>\
+              <p  myclass="myclass" [class]=myclass price="price">{{price | addEuro }}</p>\
               <p class="carComponentText d-flex align-items-center justify-content-center" price="price">{{price | getPvp }}</p>\
               <div class="carComponentText col align-items-center justify-content-center">\
                 <button class="standardBtn" (click)="discount()">Rebajar</button>\
@@ -116,6 +206,10 @@ export class carComponent {
   year : number;
   onSaleSince : Date;
   price : number;
+  state : string;
+  myclass : string;
+  parent : any;
+
   constructor(private hostComponent: ElementRef<HTMLElement>){
     this.image = "Imagen no disponible"
     this.brand = "undefined"
@@ -123,6 +217,8 @@ export class carComponent {
     this.year = 0;
     this.onSaleSince = new Date()
     this.price = 999999
+    this.state = "undefined"
+    this.myclass = "carComponentGood d-flex align-items-center justify-content-center"
   }
 
   // Al pulsar en el boton se elimina el componente
@@ -144,7 +240,7 @@ export class carComponent {
 })
 export class addEuro implements PipeTransform{
  transform(price : number) {
-   return price.toString() + " €"
+   return price.toFixed(2).toString()  + " €"
  }
 }
 
@@ -153,8 +249,8 @@ export class addEuro implements PipeTransform{
 })
 export class getPvp implements PipeTransform{
  transform(price : number) {
-   let pvp = Math.floor(price * 1.1)
-   return pvp.toString() + " €"
+   let pvp = Math.floor(price * 1.21)
+   return pvp.toFixed(2).toString() + " €"
  }
 }
 
