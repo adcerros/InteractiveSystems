@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, Pipe, PipeTransform, OnInit, AfterViewInit} from '@angular/core';
+import { Component, ViewChild, ElementRef, Pipe, PipeTransform, AfterViewInit} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 import { DatePipe } from '@angular/common';
@@ -17,16 +17,17 @@ export class AppComponent {
 
 
 @Component({
-  selector: 'billMaker',
+  selector: 'carListerMaker',
   template: '\
     <p class="mainTitle">Concesionario de coches</p>\
-    <div class="fullWidthDiv">\
+    <div class="fullWidthDiv mt-5">\
       <p class="secondaryTitle">Filtrar por:</p>\
-      <select [(ngModel)]="currentSelectionData">\
+      <select class="filterInput" [(ngModel)]="currentSelectionData">\
         <option value="" selected disabled>Selecciona la categoria</option>\
         <option  *ngFor="let currentSelectionData of filtersList">{{currentSelectionData}}</option>\
       </select>\
-      <input placeholder="Texto a filtrar" (input)="filtreElements()" [(ngModel)]="filterKeyword">\
+      <input class="filterInput" placeholder="Texto a filtrar" (input)="filtreElements()" [(ngModel)]="filterKeyword">\
+      <button class="resetFilterInput" (click)="resetFilterInput()">Borrar</button>\
     </div>\
     <div class="dataTitlesTableFormat d-flex justify-content-center mt-5 mb-5">\
       <button class="carsTableTitles">Foto</button>\
@@ -42,7 +43,7 @@ export class AppComponent {
   styleUrls: ['./app.component.scss']
 })
 
-export class billMaker implements AfterViewInit {  
+export class carListerMaker implements AfterViewInit {  
   @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
   currentSelectionData : string = "";
   filtersList: Array<string> = ["Modelo", "Marca", "Año", "Precio (menor que)", "Precio (mayor que)", "Fecha de venta (mas antigua que)", "Fecha de venta (mas reciente que)"];
@@ -57,6 +58,7 @@ export class billMaker implements AfterViewInit {
   // Creación del observable para que los hijos sepan cuando destruirse
   deleteSons$: Subject<any> = new Subject();
   deleteSons$Obs: Observable<any> = this.deleteSons$.asObservable();
+  // Listado de vehiculos
   carsList = [{image: "assets/images/320.jpeg", brand: "BMW", model: "320", year: 2015, price: 11000, state: "Bueno", onSaleDate: new Date('11-09-2021'), id: Guid.newGuid()},
               {image: "assets/images/claseA.jpeg", brand: "Mercedes", model: "Clase A", year: 2018, price: 14000, state: "Bueno", onSaleDate: new Date('03-11-2021'), id: Guid.newGuid()},
               {image: "assets/images/taycan.jpeg", brand: "Porsche", model: "Taycan", year: 2021, price: 64000, state: "Bueno", onSaleDate: new Date(), id: Guid.newGuid()},
@@ -65,7 +67,7 @@ export class billMaker implements AfterViewInit {
               {image: "assets/images/mustang.jpeg", brand: "Ford", model: "Mustang", year: 2016, price: 13400, state: "Bueno", onSaleDate: new Date('07-04-2020'), id: Guid.newGuid()}];
   carsListBackUp = [...this.carsList];
   
-  
+  // Al iniciarse crea a todos sus hijos
   ngAfterViewInit(): void {
     this.createAllComponents();
   }
@@ -76,15 +78,17 @@ export class billMaker implements AfterViewInit {
     }
   }
 
+  // Resetea los indicadores de ordenamiento
   private removeOrderingSelection(): void {
     this.orderingByBrand = false;
     this.orderingByModel = false;
-    this. orderingByYear = false;
+    this.orderingByYear = false;
     this.orderingByPrice = false;
-    this. orderingBySaleDate = false;
+    this.orderingBySaleDate = false;
     this.orderingByState = false;
   }
 
+  // Crea un componente hijo
   private createNewCarComponent(index: number) {
     const newComponent = this.dynamicHost.viewContainerRef.createComponent(carComponent);
     newComponent.instance.image = this.carsList[index].image;
@@ -99,9 +103,12 @@ export class billMaker implements AfterViewInit {
     if (newComponent.instance.state == "Malo"){
       newComponent.instance.myclass = "carComponentBad d-flex align-items-center justify-content-center";
     }
+    // Se crea un observable y una suscripcion para eliminar a los hijos cuando sea necesario
     this.deleteSons$Obs.subscribe(deleteSons => {
       newComponent.destroy()
     });
+    // Se crea un observable y una suscripcion para eliminar a los hijos cuando sea necesario 
+    //de la lista principal cuando se pulse el boton
     newComponent.instance.returnDeletedCarInfo$Obs.subscribe(currentCarId => {
       let index = this.carsList.map(object => object.id).indexOf(currentCarId);
       this.carsList.splice(index, 1)
@@ -109,6 +116,13 @@ export class billMaker implements AfterViewInit {
     });
   }
 
+  // Reset del input del filtrado
+  resetFilterInput() : void{
+    this.filterKeyword = "";
+    this.filtreElements()
+  }
+
+  // Analisis del filtrado
   filtreElements(): void{
     if (this.filterKeyword != undefined && this.filterKeyword != null && this.filterKeyword != ""){
       if (this.currentSelectionData == "Marca"){
@@ -141,6 +155,7 @@ export class billMaker implements AfterViewInit {
     }
   }
 
+  // Diferentes filtrados: se incluyen por marca, modelo, año, precio mayor y menor que, fecha del anuncio mayor y menor que
   private filtreByBrand(): void {
     this.deleteSons$.next(false);
     this.carsList = [];
@@ -220,6 +235,7 @@ export class billMaker implements AfterViewInit {
     this.createAllComponents();
   }
 
+  // Reseteo de los filtros parte comun I
   private resetFilters() {
     this.removeOrderingSelection();
     this.deleteSons$.next(false);
@@ -227,12 +243,13 @@ export class billMaker implements AfterViewInit {
     this.createAllComponents();
   }
 
-
+  // Reseteo de los filtros parte comun II
   private enableFiltering() {
     this.deleteSons$.next(false);
     this.removeOrderingSelection();
   }
 
+  // Metodos de ordenamiento se incluyen: por marca, modelo, precio, año y fecha de anuncio
 
   // Como en la lista de coches acaban primeros los ultimos elementos de la lista se invierte la comparacion
   orderByBrand() : void{
@@ -379,6 +396,7 @@ export class carComponent {
   constructor(private hostComponent: ElementRef<HTMLElement>){
   }
 
+  // Mensaje de error en las imagenes
   setErrorImageMessage(): void{
     this.availableImage = false
   }
@@ -390,6 +408,7 @@ export class carComponent {
       this.hostComponent.nativeElement.remove();
   }
 
+  //Realiza un descuento del 10%
   discount(): void{
     this.price = Math.floor(this.price * 0.9)
   }
@@ -397,7 +416,7 @@ export class carComponent {
 
 
 
-
+// Añade el simbolo de euro y dos decimales
 @Pipe({
   name: 'addEuro'
 })
@@ -407,6 +426,7 @@ export class addEuro implements PipeTransform{
  }
 }
 
+// Añade el 21% al precio y el simbolo de euro
 @Pipe({
   name: 'getPvp'
 })
@@ -417,6 +437,7 @@ export class getPvp implements PipeTransform{
  }
 }
 
+// Pone fechas en formato estandar
 @Pipe({
   name: 'dateOnFormat'
 })
