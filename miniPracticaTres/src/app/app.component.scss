@@ -1,0 +1,230 @@
+//Colors
+$mainColor: white;
+$secondaryColor: black;
+$errorColor: red;
+$niceColor: green;
+//Fonts
+$mainType: Helvetica;
+//Text sizes
+$xlongSizeText: calc(1.5vh + 1.5vw);
+$longSizeText: calc(1vh + 1vw);
+$mediumSizeText: calc(0.8vh + 0.8vw);
+$littleSizeText: calc(0.6vh + 0.6vw);
+//Margin sizes
+$xxLongMargin: calc(5vw + 2.5vh);
+$xlongMargin: calc(2vw + 1vh);
+$mediumMargin: calc(1vw + 1vh);
+$littleMargin: calc(0.5vw + 0.5vh);
+$xlittleMargin: 0.5vh;
+$xxlittleMargin: 1px;
+//Others
+$blackCenteredDivsHeight: 10vh;
+$blackCenteredDivsWidth: 10vw;
+$longButtonsWidth: 14vw;
+$longButtonsHeight: 10vh;
+$standardButtonsHeight: 4vh;
+$inputsWidth: 20vw;
+$centeredDivsWidth: 80vw;
+$semiFullWidth: 80vw;
+$fullWidth: 100vw;
+$fullHeight: 100vh;
+$semiCircleBorderRadius: 10vw;
+$centeredDivsLeftMargin: 10vw;
+
+.mainDiv{
+    width: $fullWidth;
+    height: $fullHeight;
+    display: inline-block;
+}
+
+.mainTitle{
+    font-size: $xlongSizeText;
+    font-family: $mainType;
+    text-align: center;
+    font-weight: bold;
+    margin-top: $mediumMargin;
+}
+
+.secondaryTitle{
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    margin-top: $littleMargin;
+}
+
+.specialSecondaryTitle{
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    margin-top: $xlongMargin;
+}
+
+
+.specialTitle{
+    font-size: $longSizeText;
+    font-family: $mainType;
+    margin-top: $xxLongMargin;
+    display: inline-block;
+    margin-right: $mediumMargin;
+    font-weight: bold;
+}
+
+
+.standardText{
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    display: inline-block;
+}
+
+.fullWidthDiv{
+    width: $fullWidth;
+    display: inline-block;
+    text-align: center;
+    margin-top: $mediumMargin;
+    margin-bottom: $mediumMargin;
+}
+
+.centeredDiv{
+    width: $centeredDivsWidth;
+    margin-left: $centeredDivsLeftMargin;
+    display: inline-block;
+    text-align: center;
+    margin-top: $mediumMargin;
+    margin-bottom: $mediumMargin;
+}
+
+.blackCenteredDiv{
+    width: $semiFullWidth;
+    height: $blackCenteredDivsHeight;
+    margin-left: $blackCenteredDivsWidth;
+    background-color: $secondaryColor;
+    border-radius: $mediumMargin;
+    margin-top: $mediumMargin;
+}
+
+.dataTitlesTableFormat{
+    width: $semiFullWidth;
+    height: $blackCenteredDivsHeight;
+    margin-left: $blackCenteredDivsWidth;
+    border-radius: $mediumMargin;
+}
+
+.standardBtn{
+    margin-top: $xlittleMargin;
+    margin-bottom: $xlittleMargin;
+    margin-left: $littleMargin;
+    height: $standardButtonsHeight;
+    width: $longButtonsWidth;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    border-radius: $littleMargin;
+    background-color: $mainColor;
+    color: $secondaryColor;
+    border: $xxlittleMargin solid $mainColor;
+}
+
+
+.carsTableTitles{
+    position: relative;
+    display: inline-block;
+    font-size: $mediumSizeText;
+    font-weight: bold;
+    width: $blackCenteredDivsWidth;
+    text-align: center;
+    background-color: $mainColor;
+    border-radius: $littleMargin;
+    margin-left: $xxlittleMargin; 
+    margin-right: $xxlittleMargin;
+    border: $xxlittleMargin solid $secondaryColor;
+}
+
+.carsTableTitlesSelected{
+    position: relative;
+    display: inline-block;
+    font-size: $mediumSizeText;
+    width: $blackCenteredDivsWidth;
+    text-align: center;
+    font-family: $mainType;
+    color: $mainColor;
+    background-color: $secondaryColor;
+    border-radius: $littleMargin;
+    margin-left: $xxlittleMargin;
+    margin-right: $xxlittleMargin;
+    border: none;
+}
+
+.carComponentText{
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    color: $mainColor;
+}
+
+.errorImageText{
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
+    font-size: $littleSizeText;
+    font-family: $mainType;
+    color: $mainColor;
+    padding-right: $xlongMargin;
+    padding-left: $xlongMargin;
+}
+
+.carComponentGood{
+    vertical-align: middle;
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    color: $mainColor;
+    border-radius: $littleMargin;
+    background-color: $niceColor;
+}
+
+.carComponentBad{
+    text-align: center;
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    color: $mainColor;
+    border-radius: $littleMargin;
+    background-color: $errorColor;
+}
+
+.carComponentImages{
+    width: $blackCenteredDivsWidth;
+    height: $blackCenteredDivsHeight;
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    color: $mainColor;
+    border-top-left-radius: $mediumMargin;
+    border-bottom-left-radius: $mediumMargin;
+}
+
+.filterInput{
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    width: $inputsWidth;
+    margin-left: $littleMargin;
+    margin-right: $littleMargin;
+    height: $longButtonsHeight;
+    text-align: center;
+    border-radius: $littleMargin;
+    border: $xxlittleMargin solid $secondaryColor;
+}
+
+.resetFilterInput{
+    font-size: $mediumSizeText;
+    font-family: $mainType;
+    width: $longButtonsWidth;
+    margin-left: $littleMargin;
+    margin-right: $littleMargin;
+    margin-top: $mediumMargin;
+    height: $longButtonsHeight;
+    text-align: center;
+    color: $mainColor;
+    background-color: $secondaryColor;
+    border: none;
+    border-radius: $littleMargin;
+    
+}
