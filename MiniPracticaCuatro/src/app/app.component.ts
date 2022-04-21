@@ -1,7 +1,7 @@
-import { Component, ViewChild, ElementRef, Pipe, PipeTransform, AfterViewInit} from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
-import { DatePipe } from '@angular/common';
+
 
 
 
@@ -19,24 +19,22 @@ export class AppComponent {
 @Component({
   selector: 'carListerMaker',
   template: '\
-    <p class="mainTitle">Concesionario de coches</p>\
+    <p class="mainTitle">Agenda telefonica</p>\
     <div class="fullWidthDiv mt-5">\
+      <input class="filterInput" placeholder="Texto a filtrar" (input)="filtreElements()" [(ngModel)]="filterKeyword">\
+      <button class="resetFilterInput" (click)="resetFilterInput()">Borrar</button>\
       <p class="secondaryTitle">Filtrar por:</p>\
       <select class="filterInput" [(ngModel)]="currentSelectionData">\
         <option value="" selected disabled>Selecciona la categoria</option>\
         <option  *ngFor="let currentSelectionData of filtersList">{{currentSelectionData}}</option>\
       </select>\
-      <input class="filterInput" placeholder="Texto a filtrar" (input)="filtreElements()" [(ngModel)]="filterKeyword">\
-      <button class="resetFilterInput" (click)="resetFilterInput()">Borrar</button>\
     </div>\
     <div class="dataTitlesTableFormat d-flex justify-content-center mt-5 mb-5">\
-      <button class="carsTableTitles">Foto</button>\
-      <button class="carsTableTitles"  [ngClass]="{carsTableTitles : !orderingByBrand, carsTableTitlesSelected : orderingByBrand}" (click)=orderByBrand()>Marca</button>\
-      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByModel, carsTableTitlesSelected : orderingByModel}" (click)=orderByModel()>Modelo</button>\
-      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByYear, carsTableTitlesSelected : orderingByYear}" (click)=orderByYear()>Año</button>\
-      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingBySaleDate, carsTableTitlesSelected : orderingBySaleDate}" (click)=orderBySaleDate()>En venta desde</button>\
-      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByPrice, carsTableTitlesSelected : orderingByPrice}" (click)=orderByPrice()>Precio</button>\
-      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByPrice, carsTableTitlesSelected : orderingByPrice}" (click)=orderByPrice()>PVP</button>\
+      <button class="carsTableTitles"  [ngClass]="{carsTableTitles : !orderingByName, carsTableTitlesSelected : orderingByName}" (click)=orderByName()>Nombre</button>\
+      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByTelf, carsTableTitlesSelected : orderingByTelf}" (click)=orderByTelf()>Telefono</button>\
+      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByEmail, carsTableTitlesSelected : orderingByEmail}" (click)=orderByEmail()>Email</button>\
+      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByType, carsTableTitlesSelected : orderingByType}" (click)=orderByType()>Tipo</button>\
+      <button class="carsTableTitles" [ngClass]="{carsTableTitles : !orderingByHabitual, carsTableTitlesSelected : orderingByHabitual}" (click)=orderByHabitual()>Habitual</button>\
       <button class="carsTableTitles">Acciones</button>\
     </div>\
     <ng-template carDinamicComponentHost></ng-template>',
@@ -47,13 +45,11 @@ export class carListerMaker implements AfterViewInit {
   @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
   currentSelectionData : string = "";
   filtersList: Array<string> = ["Modelo", "Marca", "Año", "Precio (menor que)", "Precio (mayor que)", "Fecha de venta (mas antigua que)", "Fecha de venta (mas reciente que)"];
-  orderingByBrand : boolean = false;
-  orderingByModel : boolean = false;
-  orderingByYear : boolean = false;
-  orderingByPrice : boolean = false;
-  orderingByPvp : boolean = false;
-  orderingBySaleDate : boolean = false;
-  orderingByState : boolean = false;
+  orderingByName : boolean = false;
+  orderingByTelf : boolean = false;
+  orderingByEmail : boolean = false;
+  orderingByHabitual : boolean = false;
+  orderingByType : boolean = false;
   filterKeyword : string = "";
   // Creación del observable para que los hijos sepan cuando destruirse
   deleteSons$: Subject<any> = new Subject();
@@ -81,19 +77,18 @@ export class carListerMaker implements AfterViewInit {
 
   // Resetea los indicadores de ordenamiento
   private removeOrderingSelection(): void {
-    this.orderingByBrand = false;
-    this.orderingByModel = false;
-    this.orderingByYear = false;
-    this.orderingByPrice = false;
-    this.orderingBySaleDate = false;
-    this.orderingByState = false;
+    this.orderingByName = false;
+    this.orderingByTelf = false;
+    this.orderingByEmail = false;
+    this.orderingByHabitual = false;
+    this.orderingByType = false;
   }
 
   // Crea un componente hijo
   private createNewCarComponent(index: number) {
     const newComponent = this.dynamicHost.viewContainerRef.createComponent(carComponent);
     newComponent.instance.name = this.carsList[index].name;
-    newComponent.instance.tlf = this.carsList[index].tlf;
+    newComponent.instance.telf = this.carsList[index].telf;
     newComponent.instance.email = this.carsList[index].email;
     newComponent.instance.type = this.carsList[index].type;
     newComponent.instance.habitual = this.carsList[index].habitual;
@@ -104,7 +99,7 @@ export class carListerMaker implements AfterViewInit {
     // Se crea un observable y una suscripcion para eliminar a los hijos cuando sea necesario 
     //de la lista principal cuando se pulse el boton
     newComponent.instance.returnDeletedCarInfo$Obs.subscribe(currentTlf => {
-      let index = this.carsList.map(object => object.tlf).indexOf(currentTlf);
+      let index = this.carsList.map(object => object.telf).indexOf(currentTlf);
       this.carsList.splice(index, 1)
       this.carsListBackUp.splice(index, 1)
     });
@@ -120,25 +115,7 @@ export class carListerMaker implements AfterViewInit {
   filtreElements(): void{
     if (this.filterKeyword != undefined && this.filterKeyword != null && this.filterKeyword != ""){
       if (this.currentSelectionData == "Marca"){
-        this.filtreByBrand();
-      }
-      else if (this.currentSelectionData == "Modelo"){
-        this.filtreByModel();
-      }
-      else if (this.currentSelectionData == "Año"){
-        this.filtreByYear();
-      }
-      else if (this.currentSelectionData == "Precio (menor que)"){
-        this.filtreByPriceLessThan();
-      }
-      else if (this.currentSelectionData == "Precio (mayor que)"){
-        this.filtreByPriceMoreThan();
-      }
-      else if (this.currentSelectionData == "Fecha de venta (mas antigua que)"){
-        this.filtreBySaleDateLessThan();
-      }
-      else if (this.currentSelectionData == "Fecha de venta (mas reciente que)"){
-        this.filtreBySaleDateMoreThan();
+        this.filtreByName();
       }
     }
     // Esta comprobación evita errores con la cadena de entrada vacia
@@ -150,79 +127,11 @@ export class carListerMaker implements AfterViewInit {
   }
 
   // Diferentes filtrados: se incluyen por marca, modelo, año, precio mayor y menor que, fecha del anuncio mayor y menor que
-  private filtreByBrand(): void {
+  private filtreByName(): void {
     this.deleteSons$.next(false);
     this.carsList = [];
     for (let i = 0; i < this.carsListBackUp.length; i++){
-      if (this.carsListBackUp[i].brand.substring(0, this.filterKeyword.length).toLowerCase() == this.filterKeyword.toLowerCase() ){
-        this.carsList.push(this.carsListBackUp[i]);
-      }
-    }
-    this.createAllComponents();
-  }
-
-  private filtreByModel(): void {
-    this.deleteSons$.next(false);
-    this.carsList = [];
-    for (let i = 0; i < this.carsListBackUp.length; i++){
-      if (this.carsListBackUp[i].model.substring(0, this.filterKeyword.length).toLowerCase()  == this.filterKeyword.toLowerCase() ){
-        this.carsList.push(this.carsListBackUp[i]);
-      }
-    }
-    this.createAllComponents();
-  }
-
-  private filtreByYear(): void {
-    this.deleteSons$.next(false);
-    this.carsList = [];
-    for (let i = 0; i < this.carsListBackUp.length; i++){
-      if (this.carsListBackUp[i].year.toString().substring(0, this.filterKeyword.length) == this.filterKeyword){
-        this.carsList.push(this.carsListBackUp[i]);
-      }
-    }
-    this.createAllComponents();
-  }
-
-  private filtreByPriceMoreThan(): void {
-    this.deleteSons$.next(false);
-    this.carsList = [];
-    for (let i = 0; i < this.carsListBackUp.length; i++){
-      if (this.carsListBackUp[i].price >= Number(this.filterKeyword)){
-        this.carsList.push(this.carsListBackUp[i]);
-      }
-    }
-    this.createAllComponents();
-  }
-
-  private filtreByPriceLessThan(): void {
-    this.deleteSons$.next(false);
-    this.carsList = [];
-    for (let i = 0; i < this.carsListBackUp.length; i++){
-      if (this.carsListBackUp[i].price <= Number(this.filterKeyword)){
-        this.carsList.push(this.carsListBackUp[i]);
-      }
-    }
-    this.createAllComponents();
-  }
-
-  private filtreBySaleDateLessThan(): void {
-    this.deleteSons$.next(false);
-    this.carsList = [];
-    let currentDate = new Date(this.filterKeyword)
-    for (let i = 0; i < this.carsListBackUp.length; i++){
-      if (this.carsListBackUp[i].onSaleDate <= currentDate){
-        this.carsList.push(this.carsListBackUp[i]);
-      }
-    }
-    this.createAllComponents();
-  }
-
-  private filtreBySaleDateMoreThan(): void {
-    this.deleteSons$.next(false);
-    this.carsList = [];
-    let currentDate = new Date(this.filterKeyword)
-    for (let i = 0; i < this.carsListBackUp.length; i++){
-      if (this.carsListBackUp[i].onSaleDate >= currentDate){
+      if (this.carsListBackUp[i].name.substring(0, this.filterKeyword.length).toLowerCase() == this.filterKeyword.toLowerCase() ){
         this.carsList.push(this.carsListBackUp[i]);
       }
     }
@@ -246,15 +155,15 @@ export class carListerMaker implements AfterViewInit {
   // Metodos de ordenamiento se incluyen: por marca, modelo, precio, año y fecha de anuncio
 
   // Como en la lista de coches acaban primeros los ultimos elementos de la lista se invierte la comparacion
-  orderByBrand() : void{
-    if (this.orderingByBrand == true) {
+  orderByName() : void{
+    if (this.orderingByName == true) {
       this.resetFilters();
     }
     else{
       this.enableFiltering();
       for (let i in this.carsList) {
         for (let j in this.carsList){
-          if (this.carsList[i].brand < this.carsList[j].brand && i != j){
+          if (this.carsList[i].name < this.carsList[j].name && i != j){
             let auxElem = this.carsList[i];
             this.carsList[i] = this.carsList[j];
             this.carsList[j] = auxElem;
@@ -262,20 +171,20 @@ export class carListerMaker implements AfterViewInit {
         }
       }
       this.createAllComponents()
-      this.orderingByBrand = true;
+      this.orderingByName = true;
     }
   }
 
 
-  orderByModel() : void{
-    if (this.orderingByModel == true) {
+  orderByTelf() : void{
+    if (this.orderingByTelf == true) {
       this.resetFilters();
     }
     else{
       this.enableFiltering();
       for (let i in this.carsList) {
         for (let j in this.carsList){
-          if (this.carsList[i].model < this.carsList[j].model && i != j){
+          if (this.carsList[i].telf < this.carsList[j].telf && i != j){
             let auxElem = this.carsList[i];
             this.carsList[i] = this.carsList[j];
             this.carsList[j] = auxElem;
@@ -283,19 +192,19 @@ export class carListerMaker implements AfterViewInit {
         }
       }
       this.createAllComponents()
-      this.orderingByModel = true;
+      this.orderingByTelf = true;
     }
   }
 
-  orderByPrice() : void{
-    if (this.orderingByPrice == true) {
+  orderByHabitual() : void{
+    if (this.orderingByHabitual == true) {
       this.resetFilters();
     }
     else{
       this.enableFiltering();
       for (let i in this.carsList) {
         for (let j in this.carsList){
-          if (this.carsList[i].price < this.carsList[j].price && i != j){
+          if (this.carsList[i].habitual < this.carsList[j].habitual && i != j){
             let auxElem = this.carsList[i];
             this.carsList[i] = this.carsList[j];
             this.carsList[j] = auxElem;
@@ -303,19 +212,19 @@ export class carListerMaker implements AfterViewInit {
         }
       }
       this.createAllComponents()
-      this.orderingByPrice = true;
+      this.orderingByHabitual = true;
     }
   }
 
-  orderByYear() : void{
-    if (this.orderingByYear == true) {
+  orderByEmail() : void{
+    if (this.orderingByEmail == true) {
       this.resetFilters();
     }
     else{
       this.enableFiltering();
       for (let i in this.carsList) {
         for (let j in this.carsList){
-          if (this.carsList[i].year < this.carsList[j].year && i != j){
+          if (this.carsList[i].email < this.carsList[j].email && i != j){
             let auxElem = this.carsList[i];
             this.carsList[i] = this.carsList[j];
             this.carsList[j] = auxElem;
@@ -323,19 +232,19 @@ export class carListerMaker implements AfterViewInit {
         }
       }
       this.createAllComponents()
-      this.orderingByYear = true;
+      this.orderingByEmail = true;
     }
   }
 
-  orderBySaleDate() : void{
-    if (this.orderingBySaleDate == true) {
+  orderByType() : void{
+    if (this.orderingByType == true) {
       this.resetFilters();
     }
     else{
       this.enableFiltering();
       for (let i in this.carsList) {
         for (let j in this.carsList){
-          if (this.carsList[i].onSaleDate < this.carsList[j].onSaleDate && i != j){
+          if (this.carsList[i].type < this.carsList[j].type && i != j){
             let auxElem = this.carsList[i];
             this.carsList[i] = this.carsList[j];
             this.carsList[j] = auxElem;
@@ -343,7 +252,7 @@ export class carListerMaker implements AfterViewInit {
         }
       }
       this.createAllComponents()
-      this.orderingBySaleDate = true;
+      this.orderingByType = true;
     }
   }
 
@@ -354,17 +263,14 @@ export class carListerMaker implements AfterViewInit {
 @Component({
   selector: 'carComponent',
   template: '<div class="blackCenteredDiv d-flex justify-content-center">\
-              <img class="carComponentImages" src={{image}} image="image" (error)="setErrorImageMessage()" *ngIf="availableImage">\
-              <p class="errorImageText d-flex align-items-center justify-content-center" *ngIf="!availableImage">Imagen no disponible</p>\
-              <p class="carComponentText d-flex align-items-center justify-content-center" model="brand">{{brand}}</p>\
-              <p class="carComponentText d-flex align-items-center justify-content-center" brand="model">{{model}}</p>\
-              <p class="carComponentText d-flex align-items-center justify-content-center" year="year">{{year}}</p>\
-              <p class="carComponentText d-flex align-items-center justify-content-center" onSaleSince="onSaleSince">{{onSaleSince | dateOnFormat}}</p>\
-              <p  myclass="myclass" [class]=myclass price="price">{{price | addEuro }}</p>\
-              <p class="carComponentText d-flex align-items-center justify-content-center" price="price">{{price | getPvp }}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" name="name">{{name}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" telf="telf">{{telf}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" email="email">{{email}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" type="type">{{type}}</p>\
+              <p class="carComponentText d-flex align-items-center justify-content-center" habitual="habitual">{{habitual}}</p>\
               <div class="carComponentText col align-items-center justify-content-center">\
-                <button class="standardBtn" (click)="discount()">Rebajar</button>\
-                <button class="standardBtn" (click)="deleteCar()">Vendido</button>\
+                <button class="standardBtn" (click)="edit()">Editar</button>\
+                <button class="standardBtn" (click)="deleteCar()">Eliminar</button>\
               </div>\
             </div>',
   styleUrls: ['./app.component.scss'],
@@ -375,7 +281,7 @@ export class carListerMaker implements AfterViewInit {
 
 export class carComponent {  
   name : string = "undefined";
-  tlf : string = "undefined";
+  telf : string = "undefined";
   email : string = "undefined";
   type : string = "undefined";
   habitual : string = "undefined";
@@ -388,9 +294,14 @@ export class carComponent {
   // Al pulsar en el boton se elimina el componente
   // Se envia el id del hijo al padre para que lo elimine de la lista de coches y no vuelva a aparecer al reordernar
   deleteCar(): void{
-      this.returnDeletedCarInfo$.next(this.tlf)
+      this.returnDeletedCarInfo$.next(this.telf)
       this.hostComponent.nativeElement.remove();
   }
+
+  edit(): void{
+    this.returnDeletedCarInfo$.next(this.telf)
+    this.hostComponent.nativeElement.remove();
+}
 }
 
 
