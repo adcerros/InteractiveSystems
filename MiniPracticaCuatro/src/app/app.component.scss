@@ -45,6 +45,14 @@ $centeredDivsLeftMargin: 10vw;
     margin-top: $mediumMargin;
 }
 
+.bigTitle{
+    font-size: $xlongSizeText;
+    font-family: $mainType;
+    text-align: center;
+    font-weight: bold;
+}
+
+
 .secondaryTitle{
     font-size: $longSizeText;
     font-family: $mainType;
@@ -127,8 +135,8 @@ $centeredDivsLeftMargin: 10vw;
     text-align: center;
     background-color: $mainColor;
     border-radius: $littleMargin;
-    margin-left: $xxlittleMargin; 
-    margin-right: $xxlittleMargin;
+    margin-left: $mediumMargin; 
+    margin-right: $mediumMargin;
     border: $xxlittleMargin solid $secondaryColor;
 }
 
@@ -142,8 +150,8 @@ $centeredDivsLeftMargin: 10vw;
     color: $mainColor;
     background-color: $secondaryColor;
     border-radius: $littleMargin;
-    margin-left: $xxlittleMargin;
-    margin-right: $xxlittleMargin;
+    margin-left: $mediumMargin;
+    margin-right: $mediumMargin;
     border: none;
 }
 
@@ -153,6 +161,8 @@ $centeredDivsLeftMargin: 10vw;
     font-size: $mediumSizeText;
     font-family: $mainType;
     color: $mainColor;
+    margin-left: $mediumMargin;
+    margin-right: $mediumMargin;
 }
 
 .errorImageText{
@@ -222,4 +232,21 @@ $centeredDivsLeftMargin: 10vw;
     border: none;
     border-radius: $littleMargin;
     
+}
+.add-form-div{
+    position: fixed;
+    width: 60vw;
+    height: 60vh;
+    background-color: $mainColor;
+    margin-top: $xxLongMargin;
+    margin-left: 20vw;
+    z-index: 3;
+}
+
+.backgound-transparency{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: $secondaryColor;
+    z-index: 2;
 }

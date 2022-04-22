@@ -1,6 +1,8 @@
 import { Component, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
+import { FormBuilder } from '@angular/forms';
+
 
 
 
@@ -19,13 +21,17 @@ export class AppComponent {
 @Component({
   selector: 'carListerMaker',
   template: '\
-    <p class="mainTitle">Agenda telefonica</p>\
+    <add-form></add-form>\
+    <div class="dataTitlesTableFormat d-flex align-items-center justify-content-around mt-5 mb-5">\
+      <p class="bigTitle">Agenda telefonica</p>\
+      <p class="secondaryTitle" numberOfContacts="numberOfContacts">Numero de contactos: {{numberOfContacts}}</p>\
+      <button class="resetFilterInput">Añadir</button>\
+    </div>\
     <div class="fullWidthDiv mt-5">\
-      <input class="filterInput" placeholder="Texto a filtrar" (input)="filtreElements()" [(ngModel)]="filterKeyword">\
+      <input class="filterInput" placeholder="Buscar nombres que empiecen por:" (input)="filtreElements()" [(ngModel)]="filterKeyword">\
       <button class="resetFilterInput" (click)="resetFilterInput()">Borrar</button>\
-      <p class="secondaryTitle">Filtrar por:</p>\
-      <select class="filterInput" [(ngModel)]="currentSelectionData">\
-        <option value="" selected disabled>Selecciona la categoria</option>\
+      <p class="secondaryTitle">Tipo</p>\
+      <select class="filterInput" (change)="filtreByType()" [(ngModel)]="currentSelectionData">\
         <option  *ngFor="let currentSelectionData of filtersList">{{currentSelectionData}}</option>\
       </select>\
     </div>\
@@ -44,7 +50,7 @@ export class AppComponent {
 export class carListerMaker implements AfterViewInit {  
   @ViewChild(MyComponentLoaderDirective) dynamicHost !: MyComponentLoaderDirective;
   currentSelectionData : string = "";
-  filtersList: Array<string> = ["Modelo", "Marca", "Año", "Precio (menor que)", "Precio (mayor que)", "Fecha de venta (mas antigua que)", "Fecha de venta (mas reciente que)"];
+  filtersList: Array<string> = ["", "Trabajo", "Personal"];
   orderingByName : boolean = false;
   orderingByTelf : boolean = false;
   orderingByEmail : boolean = false;
@@ -55,14 +61,15 @@ export class carListerMaker implements AfterViewInit {
   deleteSons$: Subject<any> = new Subject();
   deleteSons$Obs: Observable<any> = this.deleteSons$.asObservable();
   // Listado de vehiculos
-  carsList = [{name: "Joaquin", telf: "655431212", email: "juaquinrod@gmail.com", type: "Trabajo", habitual: "Si"},
-              {name: "Marta", telf: "655897252", email: "martaplaza@gmail.com", type: "Personal", habitual: "No"},
-              {name: "Arturo", telf: "623928976", email: "arturoperez@gmail.com", type: "Trabajo", habitual: "Si"},
-              {name: "Marcos", telf: "655498512", email: "marcosramirez@gmail.com", type: "Trabajo", habitual: "Si"},
-              {name: "Andrea", telf: "627461212", email: "andop@gmail.com", type: "Trabajo", habitual: "Si"},
-              {name: "Melisa", telf: "65595262", email: "malizita@gmail.com", type: "Personal", habitual: "No"},
-              {name: "Pablo", telf: "635271212", email: "pablo827@gmail.com", type: "Personal", habitual: "Si"}];
+  carsList = [{name: "Joaquin", telf: "655431212", email: "juaquinrod@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
+              {name: "Marta", telf: "655897252", email: "martaplaza@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
+              {name: "Arturo", telf: "623928976", email: "arturoperez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
+              {name: "Marcos", telf: "655498512", email: "marcosramirez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
+              {name: "Andrea", telf: "627461212", email: "andop@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
+              {name: "Melisa", telf: "65595262", email: "malizita@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
+              {name: "Pablo", telf: "635271212", email: "pablo827@gmail.com", type: "Personal", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"}];
   carsListBackUp = [...this.carsList];
+  numberOfContacts : number = this.carsListBackUp.length;
   
   // Al iniciarse crea a todos sus hijos
   ngAfterViewInit(): void {
@@ -114,9 +121,7 @@ export class carListerMaker implements AfterViewInit {
   // Analisis del filtrado
   filtreElements(): void{
     if (this.filterKeyword != undefined && this.filterKeyword != null && this.filterKeyword != ""){
-      if (this.currentSelectionData == "Marca"){
         this.filtreByName();
-      }
     }
     // Esta comprobación evita errores con la cadena de entrada vacia
     else{
@@ -136,6 +141,24 @@ export class carListerMaker implements AfterViewInit {
       }
     }
     this.createAllComponents();
+  }
+
+  filtreByType(): void {
+    if (this.currentSelectionData != undefined && this.currentSelectionData != null && this.currentSelectionData != ""){
+      this.deleteSons$.next(false);
+      this.carsList = [];
+      for (let i = 0; i < this.carsListBackUp.length; i++){
+        if (this.carsListBackUp[i].type == this.currentSelectionData ){
+          this.carsList.push(this.carsListBackUp[i]);
+        }
+      }
+      this.createAllComponents();
+    }
+    else{
+      this.carsList = [...this.carsListBackUp];
+      this.deleteSons$.next(false);
+      this.createAllComponents();
+    }
   }
 
   // Reseteo de los filtros parte comun I
@@ -268,15 +291,12 @@ export class carListerMaker implements AfterViewInit {
               <p class="carComponentText d-flex align-items-center justify-content-center" email="email">{{email}}</p>\
               <p class="carComponentText d-flex align-items-center justify-content-center" type="type">{{type}}</p>\
               <p class="carComponentText d-flex align-items-center justify-content-center" habitual="habitual">{{habitual}}</p>\
-              <div class="carComponentText col align-items-center justify-content-center">\
+              <div class="carComponentText d-flex align-items-center justify-content-center">\
                 <button class="standardBtn" (click)="edit()">Editar</button>\
                 <button class="standardBtn" (click)="deleteCar()">Eliminar</button>\
               </div>\
             </div>',
-  styleUrls: ['./app.component.scss'],
-  providers: [
-    {provide: 'price', useValue: 'container'},
-  ]
+  styleUrls: ['./app.component.scss']
 })
 
 export class carComponent {  
@@ -306,5 +326,66 @@ export class carComponent {
 
 
 
+@Component({
+  selector: 'add-form',
+  template: ' <div class="backgound-transparency"></div>\
+              <form class="add-form-div"> \
+                <button class="resetFilterInput">Cerrar</button>\
+                <div>\
+                  <label for="name">Nombre</label><input id="name" type="text" formControlName="name">\
+                </div>\
+                <div>\
+                  <label for="surname">Apellidos</label><input id="surname" type="text" formControlName="surname">\
+                </div>\
+                <div>\
+                  <label for="telf">Telefono</label><input id="telf" type="text" formControlName="telf">\
+                </div>\
+                <div>\
+                  <label for="enail">Email</label><input id="enail" type="text" formControlName="enail">\
+                </div>\
+                <div>\
+                  <label for="bornDate">Fecha de nacimiento</label><input id="bornDate" type="text" formControlName="bornDate">\
+                </div>\
+                <div>\
+                  <label for="adress">Direccion</label><input id="adress" type="text" formControlName="adress">\
+                </div>\
+                <div>\
+                  <label for="enterprise">Empresa</label><input id="enterprise" type="text" formControlName="enterprise">\
+                </div>\
+                <div>\
+                  <label for="role">Cargo</label><input id="role" type="text" formControlName="role">\
+                </div>\
+                <div>\
+                  <label for="specialization">Especializacion</label><input id="specialization" type="text" formControlName="specialization">\
+                </div>\
+              </form> \
+              ',
+  styleUrls: ['./app.component.scss']
+})
+
+// <div>\
+// <label for="name">tipo</label><input id="name" type="text" formControlName="name">\
+// </div>\
+// <div>\
+// <label for="name">habitual</label><input id="name" type="text" formControlName="name">\
+// </div>\
+
+export class AddForm {
+  name : string = "";
+  surname : string = "";
+  telf : string = "";
+  email : string = "";
+  type : string = "";
+  habitual : string = "";
+  bornDate : Date = new Date("");
+  enterprise : string = "";
+  adress : string = "";
+  role : string = "";
+  specialization : string = "";
+
+
+  constructor(){
+  }
+}
 
 
