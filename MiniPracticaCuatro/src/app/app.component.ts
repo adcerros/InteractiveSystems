@@ -1,7 +1,7 @@
-import { Component, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnInit, Output, EventEmitter, Input} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 
 
 
@@ -21,11 +21,11 @@ export class AppComponent {
 @Component({
   selector: 'carListerMaker',
   template: '\
-    <add-form></add-form>\
+    <add-form *ngIf="showAddFormBol" (showFormOutput)="hideAddForm($event)" (formNewDataOutput)="addData($event)"></add-form>\
     <div class="dataTitlesTableFormat d-flex align-items-center justify-content-around mt-5 mb-5">\
       <p class="bigTitle">Agenda telefonica</p>\
       <p class="secondaryTitle" numberOfContacts="numberOfContacts">Numero de contactos: {{numberOfContacts}}</p>\
-      <button class="resetFilterInput">Añadir</button>\
+      <button class="resetFilterInput" (click)="showAddForm()" >Añadir</button>\
     </div>\
     <div class="fullWidthDiv mt-5">\
       <input class="filterInput" placeholder="Buscar nombres que empiecen por:" (input)="filtreElements()" [(ngModel)]="filterKeyword">\
@@ -57,6 +57,8 @@ export class carListerMaker implements AfterViewInit {
   orderingByHabitual : boolean = false;
   orderingByType : boolean = false;
   filterKeyword : string = "";
+  showAddFormBol : boolean = false; 
+  showEditForm : boolean = false;
   // Creación del observable para que los hijos sepan cuando destruirse
   deleteSons$: Subject<any> = new Subject();
   deleteSons$Obs: Observable<any> = this.deleteSons$.asObservable();
@@ -82,6 +84,20 @@ export class carListerMaker implements AfterViewInit {
     }
   }
 
+  addData(newData : any){
+    this.carsListBackUp.push({name: newData.name, telf: newData.telf, email: newData.email, type: newData.type, habitual: newData.habitual, bornDate : newData.bornDate, enterprise : newData.enterprise, adress : newData.adress, role : newData.role, specialization : newData.specialization});
+    this.carsList = [...this.carsListBackUp];
+    this.deleteSons$.next(false);
+    this.createAllComponents();
+    this.showAddFormBol = false;
+  }
+
+  showAddForm (){
+    this.showAddFormBol = true;
+  }
+  hideAddForm(value : any){
+    this.showAddFormBol = false;
+  }
   // Resetea los indicadores de ordenamiento
   private removeOrderingSelection(): void {
     this.orderingByName = false;
@@ -310,7 +326,6 @@ export class carComponent {
 
   constructor(private hostComponent: ElementRef<HTMLElement>){
   }
-
   // Al pulsar en el boton se elimina el componente
   // Se envia el id del hijo al padre para que lo elimine de la lista de coches y no vuelva a aparecer al reordernar
   deleteCar(): void{
@@ -329,34 +344,45 @@ export class carComponent {
 @Component({
   selector: 'add-form',
   template: ' <div class="backgound-transparency"></div>\
-              <form class="add-form-div"> \
-                <button class="resetFilterInput">Cerrar</button>\
-                <div>\
-                  <label for="name">Nombre</label><input id="name" type="text" formControlName="name">\
-                </div>\
-                <div>\
-                  <label for="surname">Apellidos</label><input id="surname" type="text" formControlName="surname">\
-                </div>\
-                <div>\
-                  <label for="telf">Telefono</label><input id="telf" type="text" formControlName="telf">\
-                </div>\
-                <div>\
-                  <label for="enail">Email</label><input id="enail" type="text" formControlName="enail">\
-                </div>\
-                <div>\
-                  <label for="bornDate">Fecha de nacimiento</label><input id="bornDate" type="text" formControlName="bornDate">\
-                </div>\
-                <div>\
-                  <label for="adress">Direccion</label><input id="adress" type="text" formControlName="adress">\
-                </div>\
-                <div>\
-                  <label for="enterprise">Empresa</label><input id="enterprise" type="text" formControlName="enterprise">\
-                </div>\
-                <div>\
-                  <label for="role">Cargo</label><input id="role" type="text" formControlName="role">\
-                </div>\
-                <div>\
-                  <label for="specialization">Especializacion</label><input id="specialization" type="text" formControlName="specialization">\
+              <form class="add-form-div d-flex" [formGroup]="addFormGroup"> \
+                <div class="col">\
+                  <div class="d-flex justify-content-center mb-3 mt-5">\
+                    <label for="name">Nombre</label><input class="input" id="name" type="text" formControlName="name">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="surname">Apellidos</label><input class="input" id="surname" type="text" formControlName="surname">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="telf">Telefono</label><input class="input" id="telf" type="text" formControlName="telf">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="enail">Email</label><input class="input" id="enail" type="text" formControlName="email">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="bornDate">Fecha de nacimiento</label><input class="input" id="bornDate" type="text" formControlName="bornDate">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="adress">Direccion</label><input class="input" id="adress" type="text" formControlName="adress">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="enterprise">Empresa</label><input class="input" id="enterprise" type="text" formControlName="enterprise">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="role">Cargo</label><input class="input" id="role" type="text" formControlName="role">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="type">Tipo</label><input class="input" id="type" type="text" formControlName="type">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="habitual">Habitual</label><input class="input" id="habitual" type="text" formControlName="habitual">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="specialization">Especializacion</label><input class="input" id="specialization" type="text" formControlName="specialization">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <button class="resetFilterInput" type="reset" (click)="onReset()">Cerrar</button>\
+                    <button class="resetFilterInput" (click)="onSubmit()">Guardar</button>\
+                  </div>\
                 </div>\
               </form> \
               ',
@@ -371,20 +397,37 @@ export class carComponent {
 // </div>\
 
 export class AddForm {
-  name : string = "";
-  surname : string = "";
-  telf : string = "";
-  email : string = "";
-  type : string = "";
-  habitual : string = "";
-  bornDate : Date = new Date("");
-  enterprise : string = "";
-  adress : string = "";
-  role : string = "";
-  specialization : string = "";
+  submitted : boolean = false;
+  addFormGroup : FormGroup ;
 
+  @Output() showFormOutput: EventEmitter<any> = new EventEmitter();
+  @Output() formNewDataOutput: EventEmitter<any> = new EventEmitter();
+  constructor(private formBuilder : FormBuilder) {
+    this.addFormGroup = this.formBuilder.group({
+      name : ["", Validators.required],
+      surname : ["", Validators.required],
+      telf : ["", Validators.required],
+      email : ["", Validators.required],
+      type : ["", Validators.required],
+      habitual : ["", Validators.required],
+      bornDate : ["", Validators.required],
+      enterprise  : ["", Validators.required],
+      adress  : ["", Validators.required],
+      role  : ["", Validators.required],
+      specialization  : ["", Validators.required]
+    });
+  }
 
-  constructor(){
+  onSubmit(){
+    this.submitted = true;
+    this.formNewDataOutput.emit(this.addFormGroup.value);
+    this.addFormGroup.reset();
+  }
+
+  onReset(){
+    this.submitted = false;
+    this.showFormOutput.emit(this.submitted);
+    this.addFormGroup.reset();
   }
 }
 

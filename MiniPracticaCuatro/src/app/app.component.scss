@@ -235,11 +235,11 @@ $centeredDivsLeftMargin: 10vw;
 }
 .add-form-div{
     position: fixed;
-    width: 60vw;
-    height: 60vh;
+    width: 40vw;
+    height: 95vh;
     background-color: $mainColor;
-    margin-top: $xxLongMargin;
-    margin-left: 20vw;
+    margin-top: $mediumMargin;
+    margin-left: 30vw;
     z-index: 3;
 }
 
@@ -249,4 +249,9 @@ $centeredDivsLeftMargin: 10vw;
     height: 100vh;
     background-color: $secondaryColor;
     z-index: 2;
+    opacity: 0.5;
+}
+
+.input{
+    margin-left: $xlongMargin;
 }
