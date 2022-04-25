@@ -63,13 +63,13 @@ export class carListerMaker implements AfterViewInit {
   deleteSons$: Subject<any> = new Subject();
   deleteSons$Obs: Observable<any> = this.deleteSons$.asObservable();
   // Listado de vehiculos
-  carsList = [{name: "Joaquin", telf: "655431212", email: "juaquinrod@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
-              {name: "Marta", telf: "655897252", email: "martaplaza@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
-              {name: "Arturo", telf: "623928976", email: "arturoperez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
-              {name: "Marcos", telf: "655498512", email: "marcosramirez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
-              {name: "Andrea", telf: "627461212", email: "andop@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
-              {name: "Melisa", telf: "65595262", email: "malizita@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"},
-              {name: "Pablo", telf: "635271212", email: "pablo827@gmail.com", type: "Personal", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla"}];
+  carsList = [{name: "Joaquin", telf: "655431212", email: "juaquinrod@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Marta", telf: "655897252", email: "martaplaza@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Arturo", telf: "623928976", email: "arturoperez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Marcos", telf: "655498512", email: "marcosramirez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Andrea", telf: "627461212", email: "andop@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Melisa", telf: "65595262", email: "malizita@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Pablo", telf: "635271212", email: "pablo827@gmail.com", type: "Personal", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()}];
   carsListBackUp = [...this.carsList];
   numberOfContacts : number = this.carsListBackUp.length;
   
@@ -85,8 +85,9 @@ export class carListerMaker implements AfterViewInit {
   }
 
   addData(newData : any){
-    this.carsListBackUp.push({name: newData.name, telf: newData.telf, email: newData.email, type: newData.type, habitual: newData.habitual, bornDate : newData.bornDate, enterprise : newData.enterprise, adress : newData.adress, role : newData.role, specialization : newData.specialization});
+    this.carsListBackUp.push({name: newData.name, telf: newData.telf, email: newData.email, type: newData.type, habitual: newData.habitual, bornDate : newData.bornDate, enterprise : newData.enterprise, adress : newData.adress, role : newData.role, specialization : newData.specialization, id : Guid.newGuid()});
     this.carsList = [...this.carsListBackUp];
+    this.numberOfContacts = this.carsListBackUp.length;
     this.deleteSons$.next(false);
     this.createAllComponents();
     this.showAddFormBol = false;
@@ -125,6 +126,7 @@ export class carListerMaker implements AfterViewInit {
       let index = this.carsList.map(object => object.telf).indexOf(currentTlf);
       this.carsList.splice(index, 1)
       this.carsListBackUp.splice(index, 1)
+      this.numberOfContacts = this.carsListBackUp.length;
     });
   }
 
@@ -431,4 +433,13 @@ export class AddForm {
   }
 }
 
-
+//Clase para crear identificadores unicos
+class Guid {
+  static newGuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0,
+        v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+}
