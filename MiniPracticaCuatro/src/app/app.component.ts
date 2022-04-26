@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnInit, Output, EventEmitter, Input} from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnInit, Output, EventEmitter, Input, AfterContentInit} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { MyComponentLoaderDirective } from '../app/myComponentCreator'
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
@@ -22,6 +22,7 @@ export class AppComponent {
   selector: 'carListerMaker',
   template: '\
     <add-form *ngIf="showAddFormBol" (showFormOutput)="hideAddForm($event)" (formNewDataOutput)="addData($event)"></add-form>\
+    <edit-form *ngIf="showEditFormBol" [formRecivedData]="currentEditData" (showFormOutput)="hideEditForm($event)" (formNewDataOutput)="editData($event)"></edit-form>\
     <div class="dataTitlesTableFormat d-flex align-items-center justify-content-around mt-5 mb-5">\
       <p class="bigTitle">Agenda telefonica</p>\
       <p class="secondaryTitle" numberOfContacts="numberOfContacts">Numero de contactos: {{numberOfContacts}}</p>\
@@ -58,18 +59,19 @@ export class carListerMaker implements AfterViewInit {
   orderingByType : boolean = false;
   filterKeyword : string = "";
   showAddFormBol : boolean = false; 
-  showEditForm : boolean = false;
+  showEditFormBol : boolean = false;
+  currentEditData : any;
   // Creación del observable para que los hijos sepan cuando destruirse
   deleteSons$: Subject<any> = new Subject();
   deleteSons$Obs: Observable<any> = this.deleteSons$.asObservable();
   // Listado de vehiculos
-  carsList = [{name: "Joaquin", telf: "655431212", email: "juaquinrod@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
-              {name: "Marta", telf: "655897252", email: "martaplaza@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
-              {name: "Arturo", telf: "623928976", email: "arturoperez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
-              {name: "Marcos", telf: "655498512", email: "marcosramirez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
-              {name: "Andrea", telf: "627461212", email: "andop@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
-              {name: "Melisa", telf: "65595262", email: "malizita@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
-              {name: "Pablo", telf: "635271212", email: "pablo827@gmail.com", type: "Personal", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()}];
+  carsList = [{name: "Joaquin", surname: "Ortega Carillo", telf: "655431212", email: "juaquinrod@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Marta", surname: "Ortega Carillo", telf: "655897252", email: "martaplaza@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Arturo", surname: "Ortega Carillo", telf: "623928976", email: "arturoperez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Marcos", surname: "Ortega Carillo", telf: "655498512", email: "marcosramirez@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Andrea", surname: "Ortega Carillo", telf: "627461212", email: "andop@gmail.com", type: "Trabajo", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Melisa", surname: "Ortega Carillo", telf: "65595262", email: "malizita@gmail.com", type: "Personal", habitual: "No", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()},
+              {name: "Pablo", surname: "Ortega Carillo", telf: "635271212", email: "pablo827@gmail.com", type: "Personal", habitual: "Si", bornDate : new Date("03-09-1993"), enterprise : "Aldo shoes", adress : "Bualavi 32", role : "manager", specialization : "calentar la silla", id : Guid.newGuid()}];
   carsListBackUp = [...this.carsList];
   numberOfContacts : number = this.carsListBackUp.length;
   
@@ -85,12 +87,21 @@ export class carListerMaker implements AfterViewInit {
   }
 
   addData(newData : any){
-    this.carsListBackUp.push({name: newData.name, telf: newData.telf, email: newData.email, type: newData.type, habitual: newData.habitual, bornDate : newData.bornDate, enterprise : newData.enterprise, adress : newData.adress, role : newData.role, specialization : newData.specialization, id : Guid.newGuid()});
+    this.carsListBackUp.push({name: newData.name, surname: newData.surname, telf: newData.telf, email: newData.email, type: newData.type, habitual: newData.habitual, bornDate : newData.bornDate, enterprise : newData.enterprise, adress : newData.adress, role : newData.role, specialization : newData.specialization, id : Guid.newGuid()});
     this.carsList = [...this.carsListBackUp];
     this.numberOfContacts = this.carsListBackUp.length;
     this.deleteSons$.next(false);
     this.createAllComponents();
     this.showAddFormBol = false;
+  }
+  editData(newData : any){
+    let index = this.carsListBackUp.map(object => object.id).indexOf(this.currentEditData.id);
+    this.carsListBackUp[index] = {name: newData.name, surname: newData.surname, telf: newData.telf, email: newData.email, type: newData.type, habitual: newData.habitual, bornDate : newData.bornDate, enterprise : newData.enterprise, adress : newData.adress, role : newData.role, specialization : newData.specialization, id : newData.id};
+    this.carsList = [...this.carsListBackUp];
+    this.numberOfContacts = this.carsListBackUp.length;
+    this.deleteSons$.next(false);
+    this.createAllComponents();
+    this.showEditFormBol = false;
   }
 
   showAddForm (){
@@ -99,6 +110,17 @@ export class carListerMaker implements AfterViewInit {
   hideAddForm(value : any){
     this.showAddFormBol = false;
   }
+
+  showEditForm (index : number){
+    this.currentEditData = this.carsListBackUp[index];
+    this.showEditFormBol = true;
+  }
+
+  hideEditForm(value : any){
+    this.showEditFormBol = false;
+  }
+
+
   // Resetea los indicadores de ordenamiento
   private removeOrderingSelection(): void {
     this.orderingByName = false;
@@ -116,6 +138,7 @@ export class carListerMaker implements AfterViewInit {
     newComponent.instance.email = this.carsList[index].email;
     newComponent.instance.type = this.carsList[index].type;
     newComponent.instance.habitual = this.carsList[index].habitual;
+    newComponent.instance.id = this.carsList[index].id;
     // Se crea un observable y una suscripcion para eliminar a los hijos cuando sea necesario
     this.deleteSons$Obs.subscribe(deleteSons => {
       newComponent.destroy()
@@ -127,6 +150,10 @@ export class carListerMaker implements AfterViewInit {
       this.carsList.splice(index, 1)
       this.carsListBackUp.splice(index, 1)
       this.numberOfContacts = this.carsListBackUp.length;
+    });
+    newComponent.instance.showEditForm$Obs.subscribe(currentId => {
+      let index = this.carsList.map(object => object.id).indexOf(currentId);
+      this.showEditForm(index);
     });
   }
 
@@ -323,8 +350,11 @@ export class carComponent {
   email : string = "undefined";
   type : string = "undefined";
   habitual : string = "undefined";
+  id : string = "";
   returnDeletedCarInfo$: Subject<any> = new Subject();
   returnDeletedCarInfo$Obs: Observable<any> = this.returnDeletedCarInfo$.asObservable();
+  showEditForm$: Subject<any> = new Subject();
+  showEditForm$Obs: Observable<any> = this.showEditForm$.asObservable();
 
   constructor(private hostComponent: ElementRef<HTMLElement>){
   }
@@ -336,8 +366,7 @@ export class carComponent {
   }
 
   edit(): void{
-    this.returnDeletedCarInfo$.next(this.telf)
-    this.hostComponent.nativeElement.remove();
+    this.showEditForm$.next(this.id)
 }
 }
 
@@ -373,10 +402,18 @@ export class carComponent {
                     <label for="role">Cargo</label><input class="input" id="role" type="text" formControlName="role">\
                   </div>\
                   <div class="d-flex justify-content-center mb-3">\
-                    <label for="type">Tipo</label><input class="input" id="type" type="text" formControlName="type">\
+                    <p>Tipo</p>\
+                    <select  formControlName="type"  id="type" class="filterInput" [(ngModel)]="type">\
+                      <option>Trabajo</option>\
+                      <option>Personal</option>\
+                    </select>\
                   </div>\
                   <div class="d-flex justify-content-center mb-3">\
-                    <label for="habitual">Habitual</label><input class="input" id="habitual" type="text" formControlName="habitual">\
+                    <p>Habitual</p>\
+                    <select  formControlName="habitual"  id="habitual" class="filterInput" [(ngModel)]="habitual">\
+                      <option>Si</option>\
+                      <option>No</option>\
+                    </select>\
                   </div>\
                   <div class="d-flex justify-content-center mb-3">\
                     <label for="specialization">Especializacion</label><input class="input" id="specialization" type="text" formControlName="specialization">\
@@ -391,16 +428,11 @@ export class carComponent {
   styleUrls: ['./app.component.scss']
 })
 
-// <div>\
-// <label for="name">tipo</label><input id="name" type="text" formControlName="name">\
-// </div>\
-// <div>\
-// <label for="name">habitual</label><input id="name" type="text" formControlName="name">\
-// </div>\
-
 export class AddForm {
   submitted : boolean = false;
   addFormGroup : FormGroup ;
+  type : string = "";
+  habitual : string = "";
 
   @Output() showFormOutput: EventEmitter<any> = new EventEmitter();
   @Output() formNewDataOutput: EventEmitter<any> = new EventEmitter();
@@ -432,6 +464,120 @@ export class AddForm {
     this.addFormGroup.reset();
   }
 }
+
+
+
+
+@Component({
+  selector: 'edit-form',
+  template: ' <div class="backgound-transparency"></div>\
+              <form class="add-form-div d-flex" [formGroup]="editFormGroup"> \
+                <div class="col">\
+                  <div class="d-flex justify-content-center mb-3 mt-5">\
+                    <label for="name">Nombre</label><input class="input" id="name" type="text" formControlName="name">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="surname">Apellidos</label><input class="input" id="surname" type="text" formControlName="surname">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="telf">Telefono</label><input class="input" id="telf" type="text" formControlName="telf">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="enail">Email</label><input class="input" id="enail" type="text" formControlName="email">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="bornDate">Fecha de nacimiento</label><input class="input" id="bornDate" type="text" formControlName="bornDate">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="adress">Direccion</label><input class="input" id="adress" type="text" formControlName="adress">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="enterprise">Empresa</label><input class="input" id="enterprise" type="text" formControlName="enterprise">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="role">Cargo</label><input class="input" id="role" type="text" formControlName="role">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <p>Tipo</p>\
+                    <select  formControlName="type"  id="type" class="filterInput" [(ngModel)]="type">\
+                      <option>Trabajo</option>\
+                      <option>Personal</option>\
+                    </select>\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <p>Habitual</p>\
+                    <select  formControlName="habitual"  id="habitual" class="filterInput" [(ngModel)]="habitual">\
+                      <option>Si</option>\
+                      <option>No</option>\
+                    </select>\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <label for="specialization">Especializacion</label><input class="input" id="specialization" type="text" formControlName="specialization">\
+                  </div>\
+                  <div class="d-flex justify-content-center mb-3">\
+                    <button class="resetFilterInput" type="reset" (click)="onReset()">Cerrar</button>\
+                    <button class="resetFilterInput" (click)="onSubmit()">Guardar</button>\
+                  </div>\
+                </div>\
+              </form> \
+              ',
+  styleUrls: ['./app.component.scss']
+})
+
+
+export class EditForm implements AfterContentInit{
+  submitted : boolean = false;
+  editFormGroup : FormGroup ;
+  type : string = "";
+  habitual : string = "";
+  @Input() formRecivedData : any;
+  @Output() showFormOutput: EventEmitter<any> = new EventEmitter();
+  @Output() formNewDataOutput: EventEmitter<any> = new EventEmitter();
+  constructor(private formBuilder : FormBuilder) {
+    this.editFormGroup = this.formBuilder.group({
+      name : ["", Validators.required],
+      surname : ["", Validators.required],
+      telf : ["", Validators.required],
+      email : ["", Validators.required],
+      type : ["", Validators.required],
+      habitual : ["", Validators.required],
+      bornDate : ["", Validators.required],
+      enterprise  : ["", Validators.required],
+      adress  : ["", Validators.required],
+      role  : ["", Validators.required],
+      specialization  : ["", Validators.required]
+    });
+  }
+  onSubmit(){
+    this.submitted = true;
+    this.formNewDataOutput.emit(this.editFormGroup.value);
+    this.editFormGroup.reset();
+  }
+  ngAfterContentInit(){
+    this.type = this.formRecivedData.type;
+    this.habitual = this.formRecivedData.habitual;
+    this.editFormGroup = this.formBuilder.group({
+      name : [this.formRecivedData.name, Validators.required],
+      surname : [this.formRecivedData.surname, Validators.required],
+      telf : [this.formRecivedData.telf, Validators.required],
+      email : [this.formRecivedData.email, Validators.required],
+      type : [this.formRecivedData.type, Validators.required],
+      habitual : [this.formRecivedData.habitual, Validators.required],
+      bornDate : [this.formRecivedData.bornDate, Validators.required],
+      enterprise  : [this.formRecivedData.enterprise, Validators.required],
+      adress  : [this.formRecivedData.adress, Validators.required],
+      role  : [this.formRecivedData.role, Validators.required],
+      specialization  : [this.formRecivedData.specialization, Validators.required]
+    });
+     
+  }
+  onReset(){
+    this.submitted = false;
+    this.showFormOutput.emit(this.submitted);
+    this.editFormGroup.reset();
+  }
+}
+
 
 //Clase para crear identificadores unicos
 class Guid {
